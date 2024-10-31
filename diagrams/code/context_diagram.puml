@@ -1,0 +1,20 @@
+@startuml diagrame
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+skinparam rectangle {
+    BorderColor Black
+    BorderStyle Dotted
+    Padding 35
+}
+
+Person(user, "Application User", "A person that has an active account, willing to make/read/share a note.") #008DB9
+
+rectangle "PingBing Enterprise" as boundary {
+    System(appSystem, "Collectify App", "Allows users to view and write the collective notes.") #00546f
+    System(serverSystem, "Collectify Server", "Stores all the information about user's accounts, lists.") #23282a
+}
+
+Rel(user, appSystem, "Views account, makes/reads/shares notes using") 
+Rel(appSystem, serverSystem, "Gets account\n information, saves\n and modifies notes\n using") 
+
+@enduml

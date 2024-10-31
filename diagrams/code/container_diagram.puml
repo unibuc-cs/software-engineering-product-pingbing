@@ -1,0 +1,22 @@
+@startuml diagrame
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+skinparam rectangle {
+    BorderColor Black
+    BorderStyle Dotted
+    Padding 35
+}
+
+Person(user, "Application User", "A person that has an active account, willing to make/read/share a note.") #008DB9
+
+rectangle "PingBing Enterprise" as boundary {
+    System(appSystem, "Mobile App", "<<Container: React Native>>\n\n Provides notes manipulation options and a pleasant look for users.") #00546f
+    System(apiSystem, "App API", "<<Container: .NET>>\n\n Provides the internet support and ability to share notes via JSON/HTTP API.") #23282a
+    System(dataBaseSystem, "App Database", "<<Container: Microsoft SQL Server>>\n\n Stores users details, notes and specific tables to make collections of notes.") #23282a
+}
+
+Rel(user, appSystem, "Views account, makes/reads/shares notes using") 
+Rel(appSystem, apiSystem, " Makes API calls to") 
+Rel(apiSystem, dataBaseSystem, " Reads from and\n writes to") 
+
+@enduml
