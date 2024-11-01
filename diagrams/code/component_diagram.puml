@@ -1,0 +1,26 @@
+@startuml diagrame
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+skinparam rectangle {
+    BorderColor Black
+    BorderStyle Dotted
+    Padding 35
+}
+
+System(appSystem, "Mobile App", "Provides notes manipulation options and a pleasant look for users.") #00546f
+
+rectangle "API Application" as boundary {
+    System(signInSystem, "Account Controller", "Manages user account.") #89CFF0
+    System(noteSystem, "Note Management Service", "Responsible for creating, reading, updating, deleting and categorizing notes.") #89CFF0
+    System(notifySystem, "Notification Service", "Sends alerts or reminders related to notes.") #89CFF0
+}
+
+System(dataBaseSystem, "App Database", "Stores users details, notes and specific tables to make collections of notes.") #23282a
+
+Rel(appSystem, signInSystem, " Makes API calls to")
+Rel(appSystem, noteSystem, " Makes API calls to")
+Rel(noteSystem, notifySystem, " Uses")
+Rel(signInSystem, dataBaseSystem, " Reads from and\n writes to")
+Rel(noteSystem, dataBaseSystem, " Reads from and\n writes to")
+
+@enduml
