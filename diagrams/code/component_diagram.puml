@@ -1,26 +1,44 @@
 @startuml diagrame
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
+' Styles
 skinparam rectangle {
     BorderColor Black
     BorderStyle Dotted
     Padding 35
 }
 
-System(appSystem, "Mobile App", "Provides notes manipulation options and a pleasant look for users.") #00546f
+' Content
+Container(mobileApp, "Mobile App", "React Native", "Provides notes manipulation options and a pleasant look for users.") #00546f
 
 rectangle "API Application" as boundary {
-    System(signInSystem, "Account Controller", "Manages user account.") #89CFF0
-    System(noteSystem, "Note Management Service", "Responsible for creating, reading, updating, deleting and categorizing notes.") #89CFF0
-    System(notifySystem, "Notification Service", "Sends alerts or reminders related to notes.") #89CFF0
+    ' Controllers
+    Component(accountController, "Account Controller","C#", "Handles user authentication requests and manages user sessions.") #89CFF0
+    Component(notesController, "Notes Controller","C#", "Manages requests related to notes, including creation, retrieval, and deletion.") #89CFF0
+    ' Services
+    Component(accountService, "Account Service", "C#", "Processes business logic related to user accounts and authentication.") #89CFF0
+    Component(notesService, "Notes Service", "C#", "Handles business logic for notes management and interacts with the repository layer.") #89CFF0
+    Component(notificationService, "Notification Service", "C#", "Takes care of sending notifications when certain events occur within the application.") #89CFF0
+    ' Repositories
+    Component(notesRepository, "Notes Repository", "C#", "Interacts with the database for CRUD operations on notes.") #89CFF0
+    Component(accountRepository, "Account Repository", "C#", "Manages data persistence and retrieval for user accounts.") #89CFF0
 }
 
-System(dataBaseSystem, "App Database", "Stores users details, notes and specific tables to make collections of notes.") #23282a
+ContainerDb(dataBase, "App Database", "Microsoft SQL Server", "Stores user details, notes, and specific tables to facilitate collections of notes.") #23282a
 
-Rel(appSystem, signInSystem, " Makes API calls to")
-Rel(appSystem, noteSystem, " Makes API calls to")
-Rel(noteSystem, notifySystem, " Uses")
-Rel(signInSystem, dataBaseSystem, " Reads from and\n writes to")
-Rel(noteSystem, dataBaseSystem, " Reads from and\n writes to")
+' Relationships
+Rel(mobileApp, accountController, " Makes API calls to")
+Rel(mobileApp, notesController, " Makes API calls to")
 
+Rel(notesController, notesService, " Uses")
+Rel(notesController, notificationService, " Uses")
+Rel(accountController, accountService, " Uses")
+
+Rel(notesService, notesRepository, "Requests database action to")
+Rel(accountService, accountRepository, "Requests database action to")
+
+Rel(accountRepository, dataBase, " Reads from and writes to")
+Rel(notesRepository, dataBase, " Reads from and writes to")
 @enduml
