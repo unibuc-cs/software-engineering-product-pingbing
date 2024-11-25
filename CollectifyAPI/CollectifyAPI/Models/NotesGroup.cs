@@ -1,0 +1,13 @@
+﻿namespace CollectifyAPI.Models
+{
+    public class NotesGroup : BaseEntity
+    {
+        public string? Name { get; set; }
+        
+        public string? CreatorId { get; set; }
+        public virtual AppUser? Creator { get; set; }
+        
+        public virtual ICollection<Note>? Notes { get; set; }
+        public virtual ICollection<GroupMembers>? Members { get; set; }
+    }
+}
