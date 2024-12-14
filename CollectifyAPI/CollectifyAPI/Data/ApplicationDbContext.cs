@@ -1,24 +1,35 @@
-﻿using CollectifyAPI.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using CollectifyAPI.Models;
 
 namespace CollectifyAPI.Data
 {
     public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        private readonly IConfiguration _configuration;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
+            _configuration = configuration;
         }
 
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<NotesGroup> NotesGroups { get; set; }
         public DbSet<GroupMembers> GroupMembers { get; set; }
+        public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // Database seeding
+            DataSeeder.Seed(builder, _configuration);
+
+            // RefreshToken
+            builder.Entity<UserRefreshToken>()
+                .HasKey(t => t.Id);
 
             // User 1-M Note
             builder.Entity<AppUser>()
