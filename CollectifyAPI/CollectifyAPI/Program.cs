@@ -1,24 +1,34 @@
-using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using CollectifyAPI.Data;
+using CollectifyAPI.Services;
+using CollectifyAPI.Repositories;
 
-// Builder -----------------------------------------------------------------
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
-// Configure Swagger OpenApi
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Services configuration
+builder.Services.ConfigureSwagger();
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJwtAuthentication(builder.Configuration);
+builder.Services.ConfigureDatabase(builder.Configuration);
 
-// Database Context
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+// Add services
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<AccountService>();
+// Add repositories
+builder.Services.AddScoped<TokenRepository>();
 
-// App ---------------------------------------------------------------------
 var app = builder.Build();
 
+// Configurare middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -26,7 +36,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
