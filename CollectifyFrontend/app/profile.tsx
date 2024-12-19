@@ -7,7 +7,7 @@ export default function ProfileScreen() {
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
         <Layout style={styles.container}>
-        <Icon name="person" fill="#3366FF" style={styles.icon} />
+        {/* <Icon name="person" fill="#3366FF" style={styles.icon} /> */}
         <Text category="h4" style={styles.title}>User Profile</Text>
         <Text category="s1" style={styles.subtitle}>Welcome, User!</Text>
 
