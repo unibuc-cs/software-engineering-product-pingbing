@@ -5,8 +5,8 @@ import { useRouter } from 'expo-router';
 import * as eva from '@eva-design/eva';
 
 // Dummy data for folders and notes
-const folders: string[] = ['Work', 'Personal', 'Ideas'];
-const notes: string[] = ['MeetingNotes', 'ShoppingList', 'ProjectPlan'];
+const folders: string[] = ['Work', 'Personal', 'Ideas', 'a', 'd', 'f', 'e', 't', 'y', 'i'];
+const notes: string[] = ['MeetingNotes', 'ShoppingList', 'ProjectPlan', 'e', 't', 'y', 'i'];
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -42,18 +42,6 @@ export default function HomeScreen() {
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <Layout style={styles.container}>
-        {/* Top Banner */}
-        <Layout style={styles.topBanner} level="2">
-          <Text category="h5">My Notes</Text>
-          <Button
-            size="small"
-            //accessoryLeft={(props) => <Icon {...props} name="person-outline" />}
-            onPress={() => router.push('./profile')}
-          >
-            Profile
-          </Button>
-        </Layout>
-
         {/* Notes Section */}
         <Text category="h6" style={styles.sectionTitle}>Notes</Text>
         <List
@@ -63,7 +51,7 @@ export default function HomeScreen() {
         />
 
         {/* Folders Section */}
-        <Text category="h6" style={styles.sectionTitle}>Folders</Text>
+        <Text category="h6" style={styles.sectionTitle}>Spaces</Text>
         <List
           data={folders}
           renderItem={renderFolder}
