@@ -9,11 +9,13 @@ const folders: string[] = ['Work', 'Personal', 'Ideas', 'a', 'd', 'f', 'e', 't',
 
 export default function FoldersScreen() {
   const router = useRouter();
-
+  
   // Render folder items
   const renderFolder: ListRenderItem<string> = ({ item }) => (
     <ListItem
-      title={`📁 ${item}`}
+      title={() => (
+          <Text style={styles.title}>📁 {item}</Text> // Custom Text component with style
+        )}
       onPress={() =>
         router.push({
           pathname: '../spaces/[item]',
@@ -39,15 +41,15 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     backgroundColor: '#F7F9FC',
   },
-  sectionTitle: {
-    marginLeft: 10,
-    marginVertical: 5,
-    fontWeight: 'bold',
-  },
   list: {
     marginHorizontal: 10,
   },
   listItem: {
-    marginVertical: 2,
-  }
+    marginVertical: 4,
+    height: 70,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 18,
+  },
 });

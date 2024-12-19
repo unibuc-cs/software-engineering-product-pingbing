@@ -33,6 +33,7 @@ function HeaderProfileButton() {
           <Button
             size="small"
             appearance="filled"
+            status='warning'
             onPress={() => router.push('../profile')}
           >
             Profile
