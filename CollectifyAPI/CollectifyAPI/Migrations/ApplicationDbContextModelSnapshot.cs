@@ -17,7 +17,7 @@ namespace CollectifyAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -85,6 +85,24 @@ namespace CollectifyAPI.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "3be43ac7-d88a-476e-a028-b8b7d3d983e1",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "dcc42891-1a4f-40a3-b138-801c1d3deefb",
+                            Email = "admin@collectify-app.ro",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@COLLECTIFY-APP.RO",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAENdV/2Go2WTktmk8qwpY8j/UYaKUR0IfVUArCf5ozsjFcJ81drMqDujJu/gHRx0GyQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "66066297-c2e1-4bc7-9c84-4ac9c8901b7c",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("CollectifyAPI.Models.GroupMembers", b =>
@@ -92,7 +110,7 @@ namespace CollectifyAPI.Migrations
                     b.Property<string>("MemberId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("GroupId")
+                    b.Property<Guid?>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -114,7 +132,7 @@ namespace CollectifyAPI.Migrations
 
             modelBuilder.Entity("CollectifyAPI.Models.Note", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -147,7 +165,7 @@ namespace CollectifyAPI.Migrations
 
             modelBuilder.Entity("CollectifyAPI.Models.NotesGroup", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -168,6 +186,26 @@ namespace CollectifyAPI.Migrations
                     b.HasIndex("CreatorId");
 
                     b.ToTable("NotesGroups");
+                });
+
+            modelBuilder.Entity("CollectifyAPI.Models.UserRefreshToken", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Expiration")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserRefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -195,6 +233,20 @@ namespace CollectifyAPI.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "13ee4752-25fd-48f6-b6a4-fc50b819a4e6",
+                            Name = "admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "2e0262a1-e5ed-40c2-958a-45ab3152f41b",
+                            Name = "user",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -282,6 +334,13 @@ namespace CollectifyAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "3be43ac7-d88a-476e-a028-b8b7d3d983e1",
+                            RoleId = "13ee4752-25fd-48f6-b6a4-fc50b819a4e6"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
