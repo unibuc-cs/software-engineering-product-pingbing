@@ -1,14 +1,30 @@
 import { Stack } from "expo-router";
 
-// Define the layout for your app
 export default function RootLayout() {
   return (
     <Stack>
-      {/* You can specify your screens here */}
-      <Stack.Screen name="index" />
-      <Stack.Screen name="profile" />
-      <Stack.Screen name="folders/[item]" />
-      <Stack.Screen name="notes/[item]" />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+      <Stack.Screen
+        name="profile"
+        options={{
+          title: "User Profile"
+        }}
+      />
+
+      <Stack.Screen
+        name="spaces/[item]"
+        options={{
+          title: "Space"
+        }}
+      />
+
+      <Stack.Screen
+        name="notes/[item]"
+        options={{
+          title: "Note"
+        }}
+      />
     </Stack>
   );
 }
