@@ -4,6 +4,8 @@ using CollectifyAPI.Data;
 using CollectifyAPI.Models;
 using CollectifyAPI.Services;
 using CollectifyAPI.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CollectifyAPI.Controllers
 {
@@ -15,13 +17,15 @@ namespace CollectifyAPI.Controllers
         private readonly AccountService _accountService;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, TokenService tokenService, AccountService accountService)
+        public AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, TokenService tokenService, AccountService accountService, IHttpContextAccessor httpContextAccessor)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _tokenService = tokenService;
             _accountService = accountService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost]
@@ -99,6 +103,81 @@ namespace CollectifyAPI.Controllers
             }
 
             return Ok(tokens);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                throw new ActionResponseExceptions.BadRequestException("No user id provided");
+            }
+
+            var userProfile = new UserProfile();
+
+            try
+            {
+                userProfile = await _accountService.GetUserProfileAsync(_userManager, userId);
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+
+            return Ok(userProfile);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("edit_profile")]
+        public async Task<IActionResult> EditProfile([FromForm] UserProfile userProfile, IFormFile? avatar)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                throw new ActionResponseExceptions.BadRequestException("No user id provided");
+            }
+
+            try
+            {
+                userProfile = await _accountService.EditUserProfileAsync(_userManager, userId, userProfile, avatar);
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+            return Ok(userProfile);
         }
     }
 }

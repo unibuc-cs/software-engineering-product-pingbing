@@ -3,16 +3,19 @@ using CollectifyAPI.Data;
 using CollectifyAPI.Models;
 using CollectifyAPI.Dtos;
 using System.Security.Claims;
+using AutoMapper;
 
 namespace CollectifyAPI.Services
 {
     public class AccountService
     {
         private readonly TokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public AccountService(TokenService tokenService) 
+        public AccountService(TokenService tokenService, IMapper mapper) 
         {
             _tokenService = tokenService;
+            _mapper = mapper;
         }
 
         public async Task RegisterAsync(UserCreditentials userCreditentials, UserManager<AppUser> userManager)
@@ -92,7 +95,7 @@ namespace CollectifyAPI.Services
             var principal = tokenService.GetPrincipalFromExpiredToken(tokens.AccessToken);
             var userId = principal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            if (userId == null || !await tokenService.ValidateRefreshTokenAsync(userId, tokens.AccessToken))
+            if (userId == null || !await tokenService.ValidateRefreshTokenAsync(userId, tokens.RefreshToken))
             {
                 throw new ActionResponseExceptions.UnauthorizedAccessException("Invalid refresh token");
             }
@@ -111,6 +114,53 @@ namespace CollectifyAPI.Services
             await tokenService.SaveRefreshTokenAsync(userId, newRefreshToken);
 
             return new LoginTokens(newAccessToken, newRefreshToken);
+        }
+
+        public async Task<UserProfile> GetUserProfileAsync(UserManager<AppUser> userManager, string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("User from token not found!");
+            }
+
+            var userProfile = _mapper.Map<UserProfile>(user);
+
+            return userProfile;
+        }
+
+        public async Task<UserProfile> EditUserProfileAsync(UserManager<AppUser> userManager, string userId, UserProfile userProfile, IFormFile? avatar)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("User from token not found!");
+            }
+
+            if (avatar != null)
+            {
+                if (!Extensions.IsImageFile(avatar.FileName))
+                {
+                    throw new ActionResponseExceptions.BadRequestException("Not an image file provided.");
+                }
+
+                userProfile.AvatarPath = "avatars/" + user.UserName + Path.GetExtension(avatar.FileName);
+
+                using (var stream = new FileStream("wwwroot/" + userProfile.AvatarPath, FileMode.Create))
+                {
+                    await avatar.CopyToAsync(stream);
+                }
+            }
+
+            user = _mapper.Map(userProfile, user);
+
+            await userManager.UpdateAsync(user);
+
+            userProfile = _mapper.Map<UserProfile>(user);
+
+            return userProfile;
         }
     }
 }
