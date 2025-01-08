@@ -9,6 +9,7 @@ import * as SecureStore from 'expo-secure-store';
 import { refreshAccessToken } from '../../services/authService';
 import { jwtDecode } from 'jwt-decode';
 
+
 export default function TabLayout() {
   return (
     <Tabs
@@ -133,3 +134,5 @@ function HeaderProfileButton() {
     </ApplicationProvider>
   );
 }
+  
+
