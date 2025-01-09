@@ -10,6 +10,9 @@ namespace CollectifyAPI.Helpers
         {
             CreateMap<AppUser, UserProfile>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<UserProfile, AppUser>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+        
+            CreateMap<Note, SimpleNote>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<SimpleNote, Note>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

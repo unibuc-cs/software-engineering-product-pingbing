@@ -106,8 +106,8 @@ namespace CollectifyAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Route("profile")]
+        [Authorize]
         public async Task<IActionResult> GetProfile()
         {
             if (!ModelState.IsValid)
@@ -123,7 +123,7 @@ namespace CollectifyAPI.Controllers
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                throw new ActionResponseExceptions.BadRequestException("No user id provided");
+                return BadRequest("No user id provided");
             }
 
             var userProfile = new UserProfile();
@@ -145,8 +145,8 @@ namespace CollectifyAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [Route("edit_profile")]
+        [Authorize]
         public async Task<IActionResult> EditProfile([FromForm] UserProfile userProfile, IFormFile? avatar)
         {
             if (!ModelState.IsValid)
@@ -162,7 +162,7 @@ namespace CollectifyAPI.Controllers
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                throw new ActionResponseExceptions.BadRequestException("No user id provided");
+                return BadRequest("No user id provided");
             }
 
             try

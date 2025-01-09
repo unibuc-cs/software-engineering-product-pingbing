@@ -125,9 +125,7 @@ namespace CollectifyAPI.Services
                 throw new ActionResponseExceptions.NotFoundException("User from token not found!");
             }
 
-            var userProfile = _mapper.Map<UserProfile>(user);
-
-            return userProfile;
+            return _mapper.Map<UserProfile>(user);
         }
 
         public async Task<UserProfile> EditUserProfileAsync(UserManager<AppUser> userManager, string userId, UserProfile userProfile, IFormFile? avatar)
@@ -158,9 +156,7 @@ namespace CollectifyAPI.Services
 
             await userManager.UpdateAsync(user);
 
-            userProfile = _mapper.Map<UserProfile>(user);
-
-            return userProfile;
+            return _mapper.Map<UserProfile>(user);
         }
     }
 }

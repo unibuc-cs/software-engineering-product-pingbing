@@ -23,8 +23,12 @@ builder.Services.ConfigureDatabase(builder.Configuration);
 // Add services
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<NoteService>();
+builder.Services.AddScoped<GroupService>();
 // Add repositories
 builder.Services.AddScoped<TokenRepository>();
+builder.Services.AddScoped<NoteRepository>();
+builder.Services.AddScoped<GroupRepository>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

@@ -11,12 +11,23 @@ namespace CollectifyAPI.Repositories
             
         }
 
-        public async Task<ICollection<Note>> GetNotesByUserIdAsync(string userId)
+        public async Task<ICollection<Note>> GetNotesByCreatorIdAsync(string userId, bool groupNotesIncluded = false)
         {
-            return await _dbSet
-                .Where(n => n.CreatorId == userId)
-                .OrderByDescending(n => n.UpdatedAt)
-                .ToListAsync();
+            if (groupNotesIncluded)
+            {
+                return await _dbSet
+                    .Where(n => n.CreatorId == userId)
+                    .OrderByDescending(n => n.UpdatedAt)
+                    .ToListAsync();
+            }
+            else
+            {
+                return await _dbSet
+                    .Where (n => n.CreatorId == userId)
+                    .Where (n => n.GroupId == null)
+                    .OrderByDescending (n => n.UpdatedAt)
+                    .ToListAsync();
+            }
         }
 
         public async Task<ICollection<Note>> GetNotesByGroupIdAsync(Guid groupId)
