@@ -8,6 +8,6 @@
         public virtual AppUser? Creator { get; set; }
         
         public virtual ICollection<Note>? Notes { get; set; }
-        public virtual ICollection<GroupMembers>? Members { get; set; }
+        public virtual ICollection<GroupMember>? Members { get; set; }
     }
 }

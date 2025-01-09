@@ -146,7 +146,7 @@ namespace CollectifyAPI.Services
                     throw new ActionResponseExceptions.BadRequestException("Not an image file provided.");
                 }
 
-                userProfile.AvatarPath = "avatars/" + user.UserName + Path.GetExtension(avatar.FileName);
+                userProfile.AvatarPath = "static/avatars/" + Guid.NewGuid() + Path.GetExtension(avatar.FileName);
 
                 using (var stream = new FileStream("wwwroot/" + userProfile.AvatarPath, FileMode.Create))
                 {

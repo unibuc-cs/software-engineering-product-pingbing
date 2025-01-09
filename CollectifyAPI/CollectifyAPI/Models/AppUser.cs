@@ -9,6 +9,6 @@ namespace CollectifyAPI.Models
 
         public virtual ICollection<Note>? Notes { get; set; }
         public virtual ICollection<NotesGroup>? OwnedGroups { get; set; }
-        public virtual ICollection<GroupMembers>? MemberGroups { get; set; }
+        public virtual ICollection<GroupMember>? MemberGroups { get; set; }
     }
 }
