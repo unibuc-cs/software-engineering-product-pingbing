@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app-example",
+    "\\app-example\\app",
+    "\\app-example\\app\\(tabs)",
+    "\\app-example\\components"
+  ],
+  "SelectedNode": "\\app-example\\app\\(tabs)\\_layout.tsx",
+  "PreviewInSolutionExplorer": false
+}
