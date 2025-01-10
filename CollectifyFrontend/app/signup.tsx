@@ -4,8 +4,8 @@ import { StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as eva from '@eva-design/eva';
 import { registerUser } from '../services/authService';
-import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome for icons
-import { AxiosError } from 'axios'; // Import AxiosError for type checking
+import { FontAwesome } from '@expo/vector-icons'; 
+import { AxiosError } from 'axios'; 
 
 const SignupPage: React.FC = () => {
   const router = useRouter(); 

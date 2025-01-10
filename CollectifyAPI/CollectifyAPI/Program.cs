@@ -43,7 +43,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
