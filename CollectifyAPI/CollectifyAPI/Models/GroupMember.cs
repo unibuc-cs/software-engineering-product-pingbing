@@ -10,6 +10,6 @@ namespace CollectifyAPI.Models
 
         [Required]
         public Guid? GroupId { get; set; }
-        public virtual NotesGroup? Group { get; set; }
+        public virtual Group? Group { get; set; }
     }
 }

@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CollectifyAPI.Repositories
 {
-    public class GroupRepository : GenericRepository<NotesGroup>
+    public class GroupRepository : GenericRepository<Group>
     {
         public GroupRepository(ApplicationDbContext context) : base(context)
         {
 
         }
         // Gets the groups 
-        public async Task<ICollection<NotesGroup>> GetGroupsByCreatorIdAsync(string userId)
+        public async Task<ICollection<Group>> GetGroupsByCreatorIdAsync(string userId)
         {
             return await _dbSet
                 .Where(g => g.CreatorId == userId)
@@ -47,13 +47,13 @@ namespace CollectifyAPI.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ICollection<NotesGroup>> GetGroupsByMemberIdAsync(string userId)
+        public async Task<ICollection<Group>> GetGroupsByMemberIdAsync(string userId)
         {
             return await _context.AppUsers
                 .Where(u => u.Id == userId)
-                .Include(u => u.MemberGroups)
+                .Include(u => u.Groups)
                     .ThenInclude(gm => gm.Group)
-                .SelectMany(u => u.MemberGroups.Select(gm => gm.Group))
+                .SelectMany(u => u.Groups.Select(gm => gm.Group))
                 .ToListAsync();
         }
     }

@@ -19,18 +19,18 @@ namespace CollectifyAPI.Services
             _userManager = userManager;
         }
 
-        public async Task<NotesGroup> CreateGroupAsync(NotesGroup group)
+        public async Task<Group> CreateGroupAsync(Group group)
         {
             return await _groupRepository.AddAsync(group);
         }
         
-        public async Task<NotesGroup> UpdateGroupAsync(NotesGroup group)
+        public async Task<Group> UpdateGroupAsync(Group group)
         {
             await _groupRepository.Update(group);
             return group;
         }
         
-        public async Task DeleteGroupAsync(NotesGroup group)
+        public async Task DeleteGroupAsync(Group group)
         {
             await _groupRepository.Delete(group);
         }
@@ -81,7 +81,7 @@ namespace CollectifyAPI.Services
             return await _groupRepository.GetMembersByGroupIdAsync(groupId);
         }
 
-        public async Task<ICollection<NotesGroup>> GetGroupsByCreatorIdAsync(string userId)
+        public async Task<ICollection<Group>> GetGroupsByCreatorIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -92,7 +92,7 @@ namespace CollectifyAPI.Services
             return await _groupRepository.GetGroupsByCreatorIdAsync(userId);
         }
 
-        public async Task<ICollection<NotesGroup>> GetGroupsByMemberIdAsync(string userId)
+        public async Task<ICollection<Group>> GetGroupsByMemberIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)

@@ -40,7 +40,7 @@ namespace CollectifyAPI.Controllers
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return BadRequest("No user id provided");
+                return BadRequest("You are not logged in!");
             }
 
             try
@@ -75,7 +75,7 @@ namespace CollectifyAPI.Controllers
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return BadRequest("No user id provided");
+                return BadRequest("You are not logged in!");
             }
 
             try
@@ -91,5 +91,108 @@ namespace CollectifyAPI.Controllers
                 return StatusCode(500, "An unexpected error occurred: " + ex.Message);
             }
         }
+
+        [HttpPut]
+        [Route("update_note/{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateNote(Guid id, SimpleNote updatedNote)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest("You are not logged in!");
+            }
+
+            try
+            {
+                return Ok(await _noteService.UpdateNoteAsync(userId, id, updatedNote));
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("delete_note/{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteNote(Guid id)
+        {
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest("You are not logged in!");
+            }
+
+            try
+            {
+                await _noteService.DeleteNoteAsync(userId, id);
+                return Ok();
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("get_note/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetNote(Guid id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest("You are not logged in!");
+            }
+
+            try
+            {
+                return Ok(await _noteService.GetNoteAsync(id, userId));
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
     }
 }

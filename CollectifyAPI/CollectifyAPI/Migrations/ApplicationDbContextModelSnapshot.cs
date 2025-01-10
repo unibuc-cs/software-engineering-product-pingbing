@@ -95,20 +95,45 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d10d8d91-0bba-4be1-afe4-321b43f2c4a9",
+                            Id = "2f7c5505-692f-4a32-b919-b245cb6e0f76",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "973f5c6f-4897-462b-943c-e766cf1b59f6",
+                            ConcurrencyStamp = "4bf5bc6d-225a-46af-9c31-bdce2cea86d8",
                             Email = "admin@collectify-app.ro",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@COLLECTIFY-APP.RO",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJyPEVhlTWnNbQI0UwzTtPiNdnqNJiWQQwHi+SMMQ4VsZx5zh0Mo+I8uswg6Sxp0Dw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO39pLloSYZCYiTqBmrTEJKK4nGDqykrAz3awillpGIFn78l5ewY5GCtlHsTr100KA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9110c5f6-c4bb-4911-b886-a2e2a7763832",
+                            SecurityStamp = "a2ac621c-8881-4d4f-a6bc-ad1cb1c3a9f0",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
+                });
+
+            modelBuilder.Entity("CollectifyAPI.Models.Group", b =>
+                {
+                    b.Property<Guid?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("NotesGroups");
                 });
 
             modelBuilder.Entity("CollectifyAPI.Models.GroupMember", b =>
@@ -169,31 +194,6 @@ namespace CollectifyAPI.Migrations
                     b.ToTable("Notes");
                 });
 
-            modelBuilder.Entity("CollectifyAPI.Models.NotesGroup", b =>
-                {
-                    b.Property<Guid?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("NotesGroups");
-                });
-
             modelBuilder.Entity("CollectifyAPI.Models.UserRefreshToken", b =>
                 {
                     b.Property<Guid?>("Id")
@@ -249,13 +249,13 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8e0d5843-7c96-4713-b413-ffef0742ba07",
+                            Id = "01e13802-a7c6-4c8e-a0a6-015f7b1e0173",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "b0788044-1137-498d-8711-6910e22f6e45",
+                            Id = "37c5b9d8-b0db-40bd-a608-373201e673d7",
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -350,8 +350,8 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "d10d8d91-0bba-4be1-afe4-321b43f2c4a9",
-                            RoleId = "8e0d5843-7c96-4713-b413-ffef0742ba07"
+                            UserId = "2f7c5505-692f-4a32-b919-b245cb6e0f76",
+                            RoleId = "01e13802-a7c6-4c8e-a0a6-015f7b1e0173"
                         });
                 });
 
@@ -374,16 +374,26 @@ namespace CollectifyAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CollectifyAPI.Models.Group", b =>
+                {
+                    b.HasOne("CollectifyAPI.Models.AppUser", "Creator")
+                        .WithMany("OwnedGroups")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("CollectifyAPI.Models.GroupMember", b =>
                 {
-                    b.HasOne("CollectifyAPI.Models.NotesGroup", "Group")
+                    b.HasOne("CollectifyAPI.Models.Group", "Group")
                         .WithMany("Members")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CollectifyAPI.Models.AppUser", "Member")
-                        .WithMany("MemberGroups")
+                        .WithMany("Groups")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -400,7 +410,7 @@ namespace CollectifyAPI.Migrations
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("CollectifyAPI.Models.NotesGroup", "Group")
+                    b.HasOne("CollectifyAPI.Models.Group", "Group")
                         .WithMany("Notes")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -408,16 +418,6 @@ namespace CollectifyAPI.Migrations
                     b.Navigation("Creator");
 
                     b.Navigation("Group");
-                });
-
-            modelBuilder.Entity("CollectifyAPI.Models.NotesGroup", b =>
-                {
-                    b.HasOne("CollectifyAPI.Models.AppUser", "Creator")
-                        .WithMany("OwnedGroups")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -473,14 +473,14 @@ namespace CollectifyAPI.Migrations
 
             modelBuilder.Entity("CollectifyAPI.Models.AppUser", b =>
                 {
-                    b.Navigation("MemberGroups");
+                    b.Navigation("Groups");
 
                     b.Navigation("Notes");
 
                     b.Navigation("OwnedGroups");
                 });
 
-            modelBuilder.Entity("CollectifyAPI.Models.NotesGroup", b =>
+            modelBuilder.Entity("CollectifyAPI.Models.Group", b =>
                 {
                     b.Navigation("Members");
 

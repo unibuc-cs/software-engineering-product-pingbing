@@ -8,7 +8,9 @@ namespace CollectifyAPI.Models
         public string? AvatarPath { get; set; }
 
         public virtual ICollection<Note>? Notes { get; set; }
-        public virtual ICollection<NotesGroup>? OwnedGroups { get; set; }
-        public virtual ICollection<GroupMember>? MemberGroups { get; set; }
+
+        public virtual ICollection<Group>? OwnedGroups { get; set; }
+
+        public virtual ICollection<GroupMember>? Groups { get; set; }
     }
 }
