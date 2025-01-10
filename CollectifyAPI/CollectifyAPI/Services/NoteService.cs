@@ -81,5 +81,88 @@ namespace CollectifyAPI.Services
 
             return await Task.WhenAll(decryptedNotesTasks);
         }
+
+        public async Task<SimpleNote> UpdateNoteAsync(string userId, Guid id, SimpleNote updatedNote)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Note owner not found!");
+            }
+
+            var note = await _noteRepository.GetByIdAsync(id);
+
+            if (note == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Note not found!");
+            }
+
+            if (userId != note.CreatorId && note.GroupId == null)
+            {
+                throw new ActionResponseExceptions.ForbiddenAccessException("You can't update this note!");
+
+            }
+
+            if (updatedNote.Title != null)
+            {
+                note.Title = await Encrypter.Encrypt(updatedNote.Title);
+            }
+            if (updatedNote.Content != null)
+            {
+                note.Content = await Encrypter.Encrypt(updatedNote.Content);
+            }
+
+
+            await _noteRepository.Update(note);
+            return updatedNote;
+        }
+
+        public async Task DeleteNoteAsync(string userId, Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Note owner not found!");
+            }
+
+            var note = await _noteRepository.GetByIdAsync(id);
+
+            if (note == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Note not found!");
+            }
+
+            if (userId != note.CreatorId && note.GroupId == null)
+            {
+                throw new ActionResponseExceptions.ForbiddenAccessException("You can't delete this note!");
+
+            }
+
+            await _noteRepository.Delete(note);
+        }
+
+        public async Task<SimpleNote> GetNoteAsync(Guid id, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Note owner not found!");
+            }
+
+            var note = await _noteRepository.GetByIdAsync(id);
+            if (note == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Note not found!");
+            }
+
+            var simpleNote = _mapper.Map<SimpleNote>(note);
+
+            simpleNote.Title = await Encrypter.Decrypt(note.Title);
+            simpleNote.Content = await Encrypter.Decrypt(note.Content);
+
+            return simpleNote;
+        }
+
     }
+
 }

@@ -9,6 +9,6 @@
         public virtual AppUser? Creator { get; set; }
 
         public Guid? GroupId { get; set; }
-        public virtual NotesGroup? Group { get; set; }
+        public virtual Group? Group { get; set; }
     }
 }
