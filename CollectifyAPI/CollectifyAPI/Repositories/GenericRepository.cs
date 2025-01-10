@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CollectifyAPI.Data;
+using CollectifyAPI.Models;
 
 namespace CollectifyAPI.Repositories
 {
-    public class GenericRepository<T> where T : class
+    public class GenericRepository<T> where T : BaseEntity
     {
         protected readonly ApplicationDbContext _context;
         protected readonly DbSet<T> _dbSet;
@@ -40,6 +41,7 @@ namespace CollectifyAPI.Repositories
         {
             _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
+            entity.Update();
             await SaveChangesAsync();
         }
 

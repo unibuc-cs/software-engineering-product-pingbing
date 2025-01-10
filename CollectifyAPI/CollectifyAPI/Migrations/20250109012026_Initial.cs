@@ -61,7 +61,9 @@ namespace CollectifyAPI.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Expiration = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Expiration = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -256,19 +258,19 @@ namespace CollectifyAPI.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1f1e57a9-67a1-4eff-b071-b72f0b085ed2", null, "user", "USER" },
-                    { "fa6f9242-3cc8-404b-8153-41b4a1fce46a", null, "admin", "ADMIN" }
+                    { "8e0d5843-7c96-4713-b413-ffef0742ba07", null, "admin", "ADMIN" },
+                    { "b0788044-1137-498d-8711-6910e22f6e45", null, "user", "USER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "AvatarPath", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "Nickname", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "17a8cc47-ee87-423c-9952-afcdce3a5f20", 0, null, "26038c3b-db5b-4055-bbcf-2fadcf5f4d60", "admin@collectify-app.ro", true, false, null, null, "ADMIN@COLLECTIFY-APP.RO", "ADMIN", "AQAAAAIAAYagAAAAEHstPD3a9GO2dMjAyeoMnkSEIywkcS2GMDBafYsnT375+CqMZfsKIIhQQDiYb8uWnQ==", null, false, "bff97e36-f41a-440e-a349-48ee5b468901", false, "admin" });
+                values: new object[] { "d10d8d91-0bba-4be1-afe4-321b43f2c4a9", 0, null, "973f5c6f-4897-462b-943c-e766cf1b59f6", "admin@collectify-app.ro", true, false, null, null, "ADMIN@COLLECTIFY-APP.RO", "ADMIN", "AQAAAAIAAYagAAAAEJyPEVhlTWnNbQI0UwzTtPiNdnqNJiWQQwHi+SMMQ4VsZx5zh0Mo+I8uswg6Sxp0Dw==", null, false, "9110c5f6-c4bb-4911-b886-a2e2a7763832", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "fa6f9242-3cc8-404b-8153-41b4a1fce46a", "17a8cc47-ee87-423c-9952-afcdce3a5f20" });
+                values: new object[] { "8e0d5843-7c96-4713-b413-ffef0742ba07", "d10d8d91-0bba-4be1-afe4-321b43f2c4a9" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

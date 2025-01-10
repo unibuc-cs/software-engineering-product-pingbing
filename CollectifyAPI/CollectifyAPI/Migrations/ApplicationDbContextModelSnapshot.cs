@@ -95,23 +95,23 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "17a8cc47-ee87-423c-9952-afcdce3a5f20",
+                            Id = "d10d8d91-0bba-4be1-afe4-321b43f2c4a9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "26038c3b-db5b-4055-bbcf-2fadcf5f4d60",
+                            ConcurrencyStamp = "973f5c6f-4897-462b-943c-e766cf1b59f6",
                             Email = "admin@collectify-app.ro",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@COLLECTIFY-APP.RO",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHstPD3a9GO2dMjAyeoMnkSEIywkcS2GMDBafYsnT375+CqMZfsKIIhQQDiYb8uWnQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJyPEVhlTWnNbQI0UwzTtPiNdnqNJiWQQwHi+SMMQ4VsZx5zh0Mo+I8uswg6Sxp0Dw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bff97e36-f41a-440e-a349-48ee5b468901",
+                            SecurityStamp = "9110c5f6-c4bb-4911-b886-a2e2a7763832",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
                 });
 
-            modelBuilder.Entity("CollectifyAPI.Models.GroupMembers", b =>
+            modelBuilder.Entity("CollectifyAPI.Models.GroupMember", b =>
                 {
                     b.Property<string>("MemberId")
                         .HasColumnType("nvarchar(450)");
@@ -200,11 +200,17 @@ namespace CollectifyAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("Expiration")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
@@ -243,13 +249,13 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fa6f9242-3cc8-404b-8153-41b4a1fce46a",
+                            Id = "8e0d5843-7c96-4713-b413-ffef0742ba07",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "1f1e57a9-67a1-4eff-b071-b72f0b085ed2",
+                            Id = "b0788044-1137-498d-8711-6910e22f6e45",
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -344,8 +350,8 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "17a8cc47-ee87-423c-9952-afcdce3a5f20",
-                            RoleId = "fa6f9242-3cc8-404b-8153-41b4a1fce46a"
+                            UserId = "d10d8d91-0bba-4be1-afe4-321b43f2c4a9",
+                            RoleId = "8e0d5843-7c96-4713-b413-ffef0742ba07"
                         });
                 });
 
@@ -368,7 +374,7 @@ namespace CollectifyAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CollectifyAPI.Models.GroupMembers", b =>
+            modelBuilder.Entity("CollectifyAPI.Models.GroupMember", b =>
                 {
                     b.HasOne("CollectifyAPI.Models.NotesGroup", "Group")
                         .WithMany("Members")

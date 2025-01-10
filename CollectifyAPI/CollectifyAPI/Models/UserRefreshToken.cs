@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollectifyAPI.Models
 {
-    public class UserRefreshToken
+    public class UserRefreshToken : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid? Id { get; set; }
         public string? UserId { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? Expiration { get; set; }

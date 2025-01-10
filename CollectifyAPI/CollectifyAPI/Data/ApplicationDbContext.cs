@@ -15,7 +15,7 @@ namespace CollectifyAPI.Data
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<NotesGroup> NotesGroups { get; set; }
-        public DbSet<GroupMembers> GroupMembers { get; set; }
+        public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 
 
@@ -52,17 +52,17 @@ namespace CollectifyAPI.Data
                 .OnDelete(DeleteBehavior.SetNull);
 
             // GroupMembers PK
-            builder.Entity<GroupMembers>()
+            builder.Entity<GroupMember>()
                 .HasKey(gm => new { gm.MemberId, gm.GroupId });
 
             // User 1-M GroupMembers M-1 Group (User M-M Group)
-            builder.Entity<GroupMembers>()
+            builder.Entity<GroupMember>()
                 .HasOne(gm => gm.Member)
                 .WithMany(u => u.MemberGroups)
                 .HasForeignKey(gm => gm.MemberId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<GroupMembers>()
+            builder.Entity<GroupMember>()
                 .HasOne(gm => gm.Group)
                 .WithMany(g => g.Members)
                 .HasForeignKey(gm => gm.GroupId)
