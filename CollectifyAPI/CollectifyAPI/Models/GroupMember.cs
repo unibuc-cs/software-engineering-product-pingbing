@@ -2,7 +2,7 @@
 
 namespace CollectifyAPI.Models
 {
-    public class GroupMembers : BaseEntity
+    public class GroupMember : BaseEntity
     {
         [Required]
         public string? MemberId { get; set; }

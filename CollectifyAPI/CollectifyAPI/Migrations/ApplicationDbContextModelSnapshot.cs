@@ -30,6 +30,9 @@ namespace CollectifyAPI.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("AvatarPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -46,6 +49,9 @@ namespace CollectifyAPI.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Nickname")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -89,23 +95,23 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3be43ac7-d88a-476e-a028-b8b7d3d983e1",
+                            Id = "d10d8d91-0bba-4be1-afe4-321b43f2c4a9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dcc42891-1a4f-40a3-b138-801c1d3deefb",
+                            ConcurrencyStamp = "973f5c6f-4897-462b-943c-e766cf1b59f6",
                             Email = "admin@collectify-app.ro",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@COLLECTIFY-APP.RO",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENdV/2Go2WTktmk8qwpY8j/UYaKUR0IfVUArCf5ozsjFcJ81drMqDujJu/gHRx0GyQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJyPEVhlTWnNbQI0UwzTtPiNdnqNJiWQQwHi+SMMQ4VsZx5zh0Mo+I8uswg6Sxp0Dw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "66066297-c2e1-4bc7-9c84-4ac9c8901b7c",
+                            SecurityStamp = "9110c5f6-c4bb-4911-b886-a2e2a7763832",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
                 });
 
-            modelBuilder.Entity("CollectifyAPI.Models.GroupMembers", b =>
+            modelBuilder.Entity("CollectifyAPI.Models.GroupMember", b =>
                 {
                     b.Property<string>("MemberId")
                         .HasColumnType("nvarchar(450)");
@@ -194,11 +200,17 @@ namespace CollectifyAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("Expiration")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
@@ -237,13 +249,13 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "13ee4752-25fd-48f6-b6a4-fc50b819a4e6",
+                            Id = "8e0d5843-7c96-4713-b413-ffef0742ba07",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "2e0262a1-e5ed-40c2-958a-45ab3152f41b",
+                            Id = "b0788044-1137-498d-8711-6910e22f6e45",
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -338,8 +350,8 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "3be43ac7-d88a-476e-a028-b8b7d3d983e1",
-                            RoleId = "13ee4752-25fd-48f6-b6a4-fc50b819a4e6"
+                            UserId = "d10d8d91-0bba-4be1-afe4-321b43f2c4a9",
+                            RoleId = "8e0d5843-7c96-4713-b413-ffef0742ba07"
                         });
                 });
 
@@ -362,7 +374,7 @@ namespace CollectifyAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CollectifyAPI.Models.GroupMembers", b =>
+            modelBuilder.Entity("CollectifyAPI.Models.GroupMember", b =>
                 {
                     b.HasOne("CollectifyAPI.Models.NotesGroup", "Group")
                         .WithMany("Members")
