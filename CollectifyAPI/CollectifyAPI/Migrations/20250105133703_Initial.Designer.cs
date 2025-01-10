@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollectifyAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241214233407_Initial")]
+    [Migration("20250105133703_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -33,6 +33,9 @@ namespace CollectifyAPI.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("AvatarPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -49,6 +52,9 @@ namespace CollectifyAPI.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Nickname")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -92,17 +98,17 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3be43ac7-d88a-476e-a028-b8b7d3d983e1",
+                            Id = "17a8cc47-ee87-423c-9952-afcdce3a5f20",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dcc42891-1a4f-40a3-b138-801c1d3deefb",
+                            ConcurrencyStamp = "26038c3b-db5b-4055-bbcf-2fadcf5f4d60",
                             Email = "admin@collectify-app.ro",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@COLLECTIFY-APP.RO",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENdV/2Go2WTktmk8qwpY8j/UYaKUR0IfVUArCf5ozsjFcJ81drMqDujJu/gHRx0GyQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHstPD3a9GO2dMjAyeoMnkSEIywkcS2GMDBafYsnT375+CqMZfsKIIhQQDiYb8uWnQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "66066297-c2e1-4bc7-9c84-4ac9c8901b7c",
+                            SecurityStamp = "bff97e36-f41a-440e-a349-48ee5b468901",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -240,13 +246,13 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "13ee4752-25fd-48f6-b6a4-fc50b819a4e6",
+                            Id = "fa6f9242-3cc8-404b-8153-41b4a1fce46a",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "2e0262a1-e5ed-40c2-958a-45ab3152f41b",
+                            Id = "1f1e57a9-67a1-4eff-b071-b72f0b085ed2",
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -341,8 +347,8 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "3be43ac7-d88a-476e-a028-b8b7d3d983e1",
-                            RoleId = "13ee4752-25fd-48f6-b6a4-fc50b819a4e6"
+                            UserId = "17a8cc47-ee87-423c-9952-afcdce3a5f20",
+                            RoleId = "fa6f9242-3cc8-404b-8153-41b4a1fce46a"
                         });
                 });
 
