@@ -1,12 +1,10 @@
 ﻿namespace CollectifyAPI.Dtos
 {
-    public class SimpleNote
+    public class SimpleGroup
     {
         public Guid? Id { get; set; }
-        public string? Title { get; set; }
-        public string? Content { get; set; }
-        public Guid? GroupId { get; set; }
-
+        public string? Name { get; set; }
+        public string? CreatorId { get; set; }
 
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

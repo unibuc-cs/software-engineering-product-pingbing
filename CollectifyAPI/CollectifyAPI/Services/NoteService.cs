@@ -5,6 +5,7 @@ using CollectifyAPI.Dtos;
 using CollectifyAPI.Repositories;
 using CollectifyAPI.Helpers;
 using AutoMapper;
+using static Azure.Core.HttpHeader;
 
 namespace CollectifyAPI.Services
 {
@@ -23,7 +24,7 @@ namespace CollectifyAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<SimpleNote> CreateNoteAsync(String userId, SimpleNote note)
+        public async Task<SimpleNote> CreateNoteAsync(string userId, SimpleNote note)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -44,20 +45,11 @@ namespace CollectifyAPI.Services
 
             newNote.CreatorId = userId;
             
-            await _noteRepository.AddAsync(newNote);
+            var addedNote = await _noteRepository.AddAsync(newNote);
 
-            return note;
-        }
+            newNote.Id = addedNote.Id;
 
-        public async Task<Note> UpdateNoteAsync(Note note)
-        {
-            await _noteRepository.Update(note);
-            return note;
-        }
-
-        public async Task DeleteNoteAsync(Note note)
-        {
-            await _noteRepository.Delete(note);
+            return _mapper.Map<SimpleNote>(newNote);
         }
 
         public async Task<ICollection<SimpleNote>> GetOwnedNotesAsync(string userId)
@@ -76,13 +68,15 @@ namespace CollectifyAPI.Services
                 Id = note.Id,
                 Title = await Encrypter.Decrypt(note.Title!),
                 Content = await Encrypter.Decrypt(note.Content!),
-                GroupId = note.GroupId
+                GroupId = note.GroupId,
+                CreatedAt = note.CreatedAt,
+                UpdatedAt = note.UpdatedAt
             });
 
             return await Task.WhenAll(decryptedNotesTasks);
         }
 
-        public async Task<SimpleNote> UpdateNoteAsync(string userId, Guid id, SimpleNote updatedNote)
+        public async Task<SimpleNote> UpdateNoteAsync(string userId, SimpleNote updatedNote)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -90,8 +84,7 @@ namespace CollectifyAPI.Services
                 throw new ActionResponseExceptions.NotFoundException("Note owner not found!");
             }
 
-            var note = await _noteRepository.GetByIdAsync(id);
-
+            var note = await _noteRepository.GetByIdAsync(updatedNote.Id);
             if (note == null)
             {
                 throw new ActionResponseExceptions.NotFoundException("Note not found!");
@@ -114,6 +107,7 @@ namespace CollectifyAPI.Services
 
 
             await _noteRepository.Update(note);
+
             return updatedNote;
         }
 
@@ -126,7 +120,6 @@ namespace CollectifyAPI.Services
             }
 
             var note = await _noteRepository.GetByIdAsync(id);
-
             if (note == null)
             {
                 throw new ActionResponseExceptions.NotFoundException("Note not found!");
@@ -157,12 +150,36 @@ namespace CollectifyAPI.Services
 
             var simpleNote = _mapper.Map<SimpleNote>(note);
 
-            simpleNote.Title = await Encrypter.Decrypt(note.Title);
-            simpleNote.Content = await Encrypter.Decrypt(note.Content);
+            simpleNote.Title = await Encrypter.Decrypt(note.Title!);
+            simpleNote.Content = await Encrypter.Decrypt(note.Content!);
 
             return simpleNote;
         }
 
-    }
+        public async Task<ICollection<SimpleNote>> GetNotesByGroupIdAsync(Guid groupId)
+        {
+            var group = await _groupRepository.GetByIdAsync(groupId);
+            if (group == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Group not found!");
+            }
 
+            var encryptedNotes = await _noteRepository.GetNotesByGroupIdAsync(groupId);
+            
+            var notesTasks = encryptedNotes
+            .Select(async note => new SimpleNote
+            {
+                Id = note.Id,
+                Title = await Encrypter.Decrypt(note.Title!),
+                Content = await Encrypter.Decrypt(note.Content!),
+                GroupId = note.GroupId,
+                CreatedAt = note.CreatedAt,
+                UpdatedAt = note.UpdatedAt
+            });
+
+            var notes = await Task.WhenAll(notesTasks);
+
+            return _mapper.Map<ICollection<SimpleNote>>(notes);
+        }
+    }
 }

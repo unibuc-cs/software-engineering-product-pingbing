@@ -12,47 +12,151 @@ namespace CollectifyAPI.Services
     {
         private readonly GroupRepository _groupRepository;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public GroupService(GroupRepository groupRepository, UserManager<AppUser> userManager)
+        public GroupService(GroupRepository groupRepository, UserManager<AppUser> userManager, IMapper mapper)
         {
             _groupRepository = groupRepository;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
-        public async Task<Group> CreateGroupAsync(Group group)
+        public async Task<SimpleGroup> CreateGroupAsync(Group group, string userId)
         {
-            return await _groupRepository.AddAsync(group);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("User not found!");
+            }
+
+            group.CreatorId = userId;
+
+            group = await _groupRepository.AddAsync(group);
+            await _groupRepository.AddMemberToGroupAsync(userId, group.Id);
+
+            return _mapper.Map<SimpleGroup>(group);
         }
         
-        public async Task<Group> UpdateGroupAsync(Group group)
+        public async Task<SimpleGroup> UpdateGroupAsync(Group updatedGroup, string userId)
         {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("User not found!");
+            }
+
+            var group = await _groupRepository.GetByIdAsync(updatedGroup.Id);
+            if (group == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Group not found!");
+            }
+
+            if (group.CreatorId != userId)
+            {
+                throw new ActionResponseExceptions.ForbiddenAccessException("You are not the owner of this group!");
+            }
+
+            group.Name = updatedGroup.Name;
+
             await _groupRepository.Update(group);
-            return group;
+
+            return _mapper.Map<SimpleGroup>(group);
         }
         
-        public async Task DeleteGroupAsync(Group group)
+        public async Task DeleteGroupAsync(Guid groupId, string userId)
         {
+            var group = await _groupRepository.GetByIdAsync(groupId);
+            if (group == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Group not found!");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Group owner not found!");
+            }
+
+            if (group.CreatorId != userId)
+            {
+                throw new ActionResponseExceptions.ForbiddenAccessException("You are not the owner of this group!");
+            }
+
             await _groupRepository.Delete(group);
         }
 
-        public async Task AddMemberToGroupAsync(String userId, Guid groupId)
+        public async Task AddMemberToGroupAsync(GroupMember groupMember)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            if (groupMember.MemberId == null || groupMember.GroupId == null)
+            {
+                throw new ActionResponseExceptions.BadRequestException("MemberId and GroupId are required!");
+            }
+
+            var user = await _userManager.FindByIdAsync(groupMember.MemberId);
             if (user == null)
             {
                 throw new ActionResponseExceptions.NotFoundException("User not found!");
             }
 
+            var group = await _groupRepository.GetByIdAsync(groupMember.GroupId);
+            if (group == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Group not found!");
+            }
+
+            await _groupRepository.AddMemberToGroupAsync(groupMember.MemberId, groupMember.GroupId);
+        }
+
+        public async Task RemoveMemberFromGroupAsync(GroupMember groupMember)
+        {
+            if (groupMember.MemberId == null || groupMember.GroupId == null)
+            {
+                throw new ActionResponseExceptions.BadRequestException("MemberId and GroupId are required!");
+            }
+
+            var user = await _userManager.FindByIdAsync(groupMember.MemberId);
+            if (user == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("User not found!");
+            }
+
+            var group = await _groupRepository.GetByIdAsync(groupMember.GroupId);
+            if (group == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Group not found!");
+            }
+
+            var result = await _groupRepository.RemoveMemberFromGroupAsync(groupMember.MemberId, groupMember.GroupId);
+
+            if (result)
+            {
+                return;
+            }
+            else
+            {
+                throw new ActionResponseExceptions.BadRequestException("Member removal failed!");
+            }
+        }
+
+        public async Task<ICollection<UserProfile>> GetMembersByGroupIdAsync(Guid groupId)
+        {
             var group = await _groupRepository.GetByIdAsync(groupId);
             if (group == null)
             {
                 throw new ActionResponseExceptions.NotFoundException("Group not found!");
             }
 
-            await _groupRepository.AddMemberToGroupAsync(userId, groupId);
+            var members = await _groupRepository.GetMembersByGroupIdAsync(groupId);
+
+            return members.Select(m => new UserProfile
+            {
+                Id = m.MemberId,
+                Nickname = m.Member!.Nickname,
+                AvatarPath = m.Member.AvatarPath
+            }).ToList();
         }
 
-        public async Task RemoveMemberFromGroupAsync(String userId, Guid groupId)
+        public async Task<ICollection<SimpleGroup>> GetGroupsByCreatorIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -60,28 +164,11 @@ namespace CollectifyAPI.Services
                 throw new ActionResponseExceptions.NotFoundException("User not found!");
             }
 
-            var group = await _groupRepository.GetByIdAsync(groupId);
-            if (group == null)
-            {
-                throw new ActionResponseExceptions.NotFoundException("Group not found!");
-            }
-
-            await _groupRepository.RemoveMemberFromGroupAsync(userId, groupId);
+            var groups = await _groupRepository.GetGroupsByCreatorIdAsync(userId);
+            return _mapper.Map<ICollection<SimpleGroup>>(groups);
         }
 
-
-        public async Task<ICollection<GroupMember>> GetMembersByGroupIdAsync(Guid groupId)
-        {
-            var group = await _groupRepository.GetByIdAsync(groupId);
-            if (group == null)
-            {
-                throw new ActionResponseExceptions.NotFoundException("Group not found!");
-            }
-
-            return await _groupRepository.GetMembersByGroupIdAsync(groupId);
-        }
-
-        public async Task<ICollection<Group>> GetGroupsByCreatorIdAsync(string userId)
+        public async Task<ICollection<SimpleGroup>> GetGroupsByMemberIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -89,18 +176,9 @@ namespace CollectifyAPI.Services
                 throw new ActionResponseExceptions.NotFoundException("User not found!");
             }
 
-            return await _groupRepository.GetGroupsByCreatorIdAsync(userId);
-        }
+            var groups = await _groupRepository.GetGroupsByMemberIdAsync(userId);
 
-        public async Task<ICollection<Group>> GetGroupsByMemberIdAsync(string userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ActionResponseExceptions.NotFoundException("User not found!");
-            }
-
-            return await _groupRepository.GetGroupsByMemberIdAsync(userId);
+            return _mapper.Map<ICollection<SimpleGroup>>(groups);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace CollectifyAPI.Data
 
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Note> Notes { get; set; }
-        public DbSet<Group> NotesGroups { get; set; }
+        public DbSet<Group> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 

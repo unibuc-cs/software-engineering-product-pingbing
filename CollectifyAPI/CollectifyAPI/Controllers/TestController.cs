@@ -17,6 +17,7 @@ namespace CollectifyAPI.Controllers
 
         [HttpGet]
         [Route("userTest")]
+        [Authorize]
         public IActionResult UserTest()
         {
             return Ok("Success");
