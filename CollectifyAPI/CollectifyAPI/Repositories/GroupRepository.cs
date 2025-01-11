@@ -10,7 +10,7 @@ namespace CollectifyAPI.Repositories
         {
 
         }
-        // Gets the groups 
+        
         public async Task<ICollection<Group>> GetGroupsByCreatorIdAsync(string userId)
         {
             return await _dbSet
@@ -20,15 +20,17 @@ namespace CollectifyAPI.Repositories
                 .ToListAsync();
         }
 
-        public async Task<GroupMember> AddMemberToGroupAsync(String userId, Guid groupId)
+        public async Task<GroupMember> AddMemberToGroupAsync(string userId, Guid? groupId)
         {
             var groupMember = new GroupMember { MemberId = userId, GroupId = groupId };
-            await SaveChangesAsync();
+
             await _context.GroupMembers.AddAsync(groupMember);
+            await SaveChangesAsync();
+
             return groupMember;
         }
 
-        public async Task RemoveMemberFromGroupAsync(String userId, Guid groupId)
+        public async Task<bool> RemoveMemberFromGroupAsync(string userId, Guid? groupId)
         {
             var groupMember = await _context.GroupMembers
                 .Where(gm => gm.MemberId == userId && gm.GroupId == groupId)
@@ -37,23 +39,24 @@ namespace CollectifyAPI.Repositories
             {
                 _context.GroupMembers.Remove(groupMember);
                 await SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
-        public async Task<ICollection<GroupMember>> GetMembersByGroupIdAsync(Guid groupId)
+        public async Task<ICollection<GroupMember>> GetMembersByGroupIdAsync(Guid? groupId)
         {
             return await _context.GroupMembers
                 .Where(gm => gm.GroupId == groupId)
+                .Include(gm => gm.Member)
                 .ToListAsync();
         }
 
         public async Task<ICollection<Group>> GetGroupsByMemberIdAsync(string userId)
         {
-            return await _context.AppUsers
-                .Where(u => u.Id == userId)
-                .Include(u => u.Groups)
-                    .ThenInclude(gm => gm.Group)
-                .SelectMany(u => u.Groups.Select(gm => gm.Group))
+            return await _context.GroupMembers
+                .Where(gm => gm.MemberId == userId)
+                .Select(gm => gm.Group!)
                 .ToListAsync();
         }
     }

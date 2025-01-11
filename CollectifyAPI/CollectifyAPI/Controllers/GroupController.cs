@@ -8,58 +8,21 @@ using System.Security.Claims;
 
 namespace CollectifyAPI.Controllers
 {
-    [ApiController]
-    [Route("api/notes")]
-    public class NoteController : Controller
+    public class GroupController : Controller
     {
-        private readonly NoteService _noteService;
+        private readonly GroupService _groupService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public NoteController(NoteService noteService, IHttpContextAccessor httpContextAccessor)
+        public GroupController(GroupService groupService, IHttpContextAccessor httpContextAccessor)
         {
-            _noteService = noteService;
+            _groupService = groupService;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [HttpGet]
-        [Route("owned_notes")]
-        [Authorize]
-        public async Task<IActionResult> GetOwnedNotes()
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (_httpContextAccessor.HttpContext == null)
-            {
-                return NotFound();
-            }
-
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-            {
-                return BadRequest("You are not logged in!");
-            }
-
-            try
-            {
-                return Ok(await _noteService.GetOwnedNotesAsync(userId));
-            }
-            catch (ActionResponseExceptions.BaseException ex)
-            {
-                return StatusCode(ex.StatusCode, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
-            }
-        }
-
         [HttpPost]
-        [Route("add_note")]
+        [Route("create_group")]
         [Authorize]
-        public async Task<IActionResult> CreateNote(SimpleNote note)
+        public async Task<IActionResult> CreateGroup([FromBody] Group group)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +42,7 @@ namespace CollectifyAPI.Controllers
 
             try
             {
-                return Ok(await _noteService.CreateNoteAsync(userId, note));
+                return Ok(await _groupService.CreateGroupAsync(group, userId));
             }
             catch (ActionResponseExceptions.BaseException ex)
             {
@@ -92,9 +55,9 @@ namespace CollectifyAPI.Controllers
         }
 
         [HttpPut]
-        [Route("update_note")]
+        [Route("update_group")]
         [Authorize]
-        public async Task<IActionResult> UpdateNote([FromBody] SimpleNote updatedNote)
+        public async Task<IActionResult> UpdateGroup([FromBody] Group group)
         {
             if (!ModelState.IsValid)
             {
@@ -114,7 +77,7 @@ namespace CollectifyAPI.Controllers
 
             try
             {
-                return Ok(await _noteService.UpdateNoteAsync(userId, updatedNote));
+                return Ok(await _groupService.UpdateGroupAsync(group, userId));
             }
             catch (ActionResponseExceptions.BaseException ex)
             {
@@ -127,10 +90,15 @@ namespace CollectifyAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("delete_note")]
+        [Route("delete_group")]
         [Authorize]
-        public async Task<IActionResult> DeleteNote(Guid noteId)
+        public async Task<IActionResult> DeleteGroup(Guid groupId)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (_httpContextAccessor.HttpContext == null)
             {
                 return NotFound();
@@ -144,7 +112,67 @@ namespace CollectifyAPI.Controllers
 
             try
             {
-                await _noteService.DeleteNoteAsync(userId, noteId);
+                await _groupService.DeleteGroupAsync(groupId, userId);
+                return Ok();
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("add_member")]
+        [Authorize]
+        public async Task<IActionResult> AddMemberToGroup([FromBody] GroupMember groupMember)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await _groupService.AddMemberToGroupAsync(groupMember);
+                return Ok();
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("remove_member")]
+        [Authorize]
+        public async Task<IActionResult> RemoveMemberFromGroup([FromBody] GroupMember groupMember)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await _groupService.RemoveMemberFromGroupAsync(groupMember);
                 return Ok();
             }
             catch (ActionResponseExceptions.BaseException ex)
@@ -158,9 +186,9 @@ namespace CollectifyAPI.Controllers
         }
 
         [HttpGet]
-        [Route("get_note")]
+        [Route("get_group_members")]
         [Authorize]
-        public async Task<IActionResult> GetNote(Guid noteId)
+        public async Task<IActionResult> GetMembersByGroupId(Guid groupId)
         {
             if (!ModelState.IsValid)
             {
@@ -175,12 +203,13 @@ namespace CollectifyAPI.Controllers
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
+               
                 return BadRequest("You are not logged in!");
             }
 
             try
             {
-                return Ok(await _noteService.GetNoteAsync(noteId, userId));
+                return Ok(await _groupService.GetMembersByGroupIdAsync(groupId));
             }
             catch (ActionResponseExceptions.BaseException ex)
             {
@@ -193,26 +222,64 @@ namespace CollectifyAPI.Controllers
         }
 
         [HttpGet]
-        [Route("get_notes_from_group")]
+        [Route("get_member_groups")]
         [Authorize]
-        public async Task<IActionResult> GetNotesFromGroup(Guid groupId)
+        public async Task<IActionResult> GetGroupsByMemberId()
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             if (_httpContextAccessor.HttpContext == null)
             {
                 return NotFound();
             }
+
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
                 return BadRequest("You are not logged in!");
             }
+
             try
             {
-                return Ok(await _noteService.GetNotesByGroupIdAsync(groupId));
+                return Ok(await _groupService.GetGroupsByMemberIdAsync(userId));
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("get_owned_groups")]
+        [Authorize]
+        public async Task<IActionResult> GetGroupsByCreatorId()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest("You are not logged in!");
+            }
+
+            try
+            {
+                return Ok(await _groupService.GetGroupsByCreatorIdAsync(userId));
             }
             catch (ActionResponseExceptions.BaseException ex)
             {
