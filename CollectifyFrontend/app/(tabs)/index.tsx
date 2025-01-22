@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Text, List, ListItem, ApplicationProvider } from '@ui-kitten/components';
-import { StyleSheet, ListRenderItem } from 'react-native';
+import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-kitten/components';
+import { StyleSheet, ListRenderItem, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as eva from '@eva-design/eva';
-import { getOwnedNotes } from '../../services/noteService';
+import { getOwnedNotes, addNote } from '../../services/noteService';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+
+interface Note {
+  id: string;
+  title: string;
+}
 
 export default function NotesScreen() {
   const router = useRouter();
-  const [notes, setNotes] = useState<string[]>([]); // State for notes
+  const [notes, setNotes] = useState<Note[]>([]); // State for notes
   const [loading, setLoading] = useState(true); // State for loading
 
   // Fetch notes when the component mounts
@@ -15,7 +21,7 @@ export default function NotesScreen() {
     const fetchNotes = async () => {
       try {
         const fetchedNotes = await getOwnedNotes();
-        setNotes(fetchedNotes.map((note: { title: string }) => note.title)); // Adjust the mapping based on your API response
+        setNotes(fetchedNotes.map((note: { id: string; title: string }) => ({ id: note.id, title: note.title })));
       } catch (error) {
         console.error('Error fetching notes:', error);
       } finally {
@@ -27,15 +33,20 @@ export default function NotesScreen() {
   }, []);
 
   // Render note items
-  const renderNote: ListRenderItem<string> = ({ item }) => (
+  const renderNote: ListRenderItem<Note> = ({ item }) => (
     <ListItem
       title={() => (
-        <Text style={styles.title}>📝 {item}</Text> // Custom Text component with style
+        <View style={styles.noteContainer}>
+          <Text style={styles.title}>📝 { item.title }</Text>
+          <TouchableOpacity>
+            <FontAwesome5 name="trash-alt" size={18} color="red" />
+          </TouchableOpacity>
+        </View>
       )}
       onPress={() =>
         router.push({
           pathname: '../notes/[item]',
-          params: { item }, // Pass the dynamic item as params
+          params: { item: item.id }, // Pass the dynamic item as params
         })
       }
       style={styles.listItem}
@@ -44,9 +55,11 @@ export default function NotesScreen() {
 
   if (loading) {
     return (
-      <Layout style={styles.loadingContainer}>
-        <Text>Loading Notes...</Text>
-      </Layout>
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <Layout style={styles.loadingContainer}>
+          <Text>Loading Notes...</Text>
+        </Layout>
+      </ApplicationProvider>
     );
   }
 
@@ -54,6 +67,16 @@ export default function NotesScreen() {
     <ApplicationProvider {...eva} theme={eva.light}>
       <Layout style={styles.container}>
         <List data={notes} renderItem={renderNote} style={styles.list} />
+        <Button
+          status="warning"
+          onPress={() => {
+            addNote('New Note', '');
+          }}
+          style={styles.newNoteButton}
+        >
+          New Note
+        </Button>
+
       </Layout>
     </ApplicationProvider>
   );
@@ -81,5 +104,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
+  },
+  newNoteButton: {
+    width: '90%',
+    borderRadius: 8,
+    alignSelf: 'center',
+    marginBottom: 10
+  },
+  noteContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginRight: 10
   },
 });

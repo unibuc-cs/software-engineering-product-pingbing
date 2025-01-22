@@ -28,3 +28,67 @@ export const getOwnedNotes = async () => {
     throw error;
   }
 };
+
+export const getNote = async (id: string) => {
+  try {
+    // Retrieve the access token from secure storage
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+
+    // Send a GET request to the get_note endpoint
+    const response = await api.get(`/api/notes/get_note`, {
+      params: {
+        noteId: id, // Pass noteId as a query parameter
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+      },
+    });
+
+    return response.data; // Assuming the response contains the note details
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error fetching the note', error.response?.data || error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
+    throw error;
+  }
+};
+
+export const addNote = async (title: string, content: string) => {
+  try {
+    // Retrieve the access token from secure storage
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+
+    // Send a POST request to the add_note endpoint
+    const response = await api.post(
+      '/api/notes/add_note',
+      {
+        title,   // Title of the note
+        content, // Content of the note
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+        },
+      }
+    );
+
+    return response.data; // Assuming the response contains the created note details
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error adding a new note', error.response?.data || error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
+    throw error;
+  }
+};
