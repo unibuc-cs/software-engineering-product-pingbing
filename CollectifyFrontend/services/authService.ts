@@ -1,16 +1,6 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
-
-const api = axios.create({
-  baseURL: 'http://10.0.2.2:5251', 
-  timeout: 10000,
-  httpsAgent: {
-    rejectUnauthorized: false, 
-  },
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import api from './axiosInstance';
 
 export const loginUser = async (email: string, password: string) => {
   try {
