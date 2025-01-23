@@ -92,3 +92,33 @@ export const addNote = async (title: string, content: string) => {
     throw error;
   }
 };
+
+export const deleteNote = async (id: string) => {
+  try {
+    // Retrieve the access token from secure storage
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+
+    // Send a DELETE request to the delete_note endpoint
+    const response = await api.delete('/api/notes/delete_note', {
+      params: {
+        noteId: id, // Pass noteId as a query parameter
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+      },
+    });
+
+    return response.data; // Assuming the response confirms the deletion
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error deleting the note', error.response?.data || error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
+    throw error;
+  }
+};

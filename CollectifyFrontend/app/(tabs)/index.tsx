@@ -3,7 +3,7 @@ import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-k
 import { StyleSheet, ListRenderItem, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as eva from '@eva-design/eva';
-import { getOwnedNotes, addNote } from '../../services/noteService';
+import { getOwnedNotes, addNote, deleteNote } from '../../services/noteService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 interface Note {
@@ -38,7 +38,7 @@ export default function NotesScreen() {
       title={() => (
         <View style={styles.noteContainer}>
           <Text style={styles.title}>📝 { item.title }</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => deleteNote(item.id)}>
             <FontAwesome5 name="trash-alt" size={18} color="red" />
           </TouchableOpacity>
         </View>
