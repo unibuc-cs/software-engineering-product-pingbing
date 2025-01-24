@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using CollectifyAPI.Data;
 using CollectifyAPI.Services;
 using CollectifyAPI.Repositories;
+using Microsoft.Extensions.FileProviders;
 
 
 
@@ -42,7 +43,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "static")),
+    RequestPath = "/static"
+});
 //app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();

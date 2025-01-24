@@ -144,12 +144,22 @@ namespace CollectifyAPI.Services
                     throw new ActionResponseExceptions.BadRequestException("Not an image file provided.");
                 }
 
-                userProfile.AvatarPath = "static/avatars/" + Guid.NewGuid() + Path.GetExtension(avatar.FileName);
+                var staticFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "static", "avatars");
 
-                using (var stream = new FileStream("wwwroot/" + userProfile.AvatarPath, FileMode.Create))
+                if (!Directory.Exists(staticFolderPath))
+                {
+                    Directory.CreateDirectory(staticFolderPath);
+                }
+
+                var avatarFileName = Guid.NewGuid() + Path.GetExtension(avatar.FileName);
+                var fullAvatarPath = Path.Combine(staticFolderPath, avatarFileName);
+
+                using (var stream = new FileStream(fullAvatarPath, FileMode.Create))
                 {
                     await avatar.CopyToAsync(stream);
                 }
+
+                userProfile.AvatarPath = $"/static/avatars/{avatarFileName}";
             }
 
             user = _mapper.Map(userProfile, user);
@@ -158,5 +168,6 @@ namespace CollectifyAPI.Services
 
             return _mapper.Map<UserProfile>(user);
         }
+
     }
 }

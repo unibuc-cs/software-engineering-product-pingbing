@@ -6,7 +6,7 @@ import { View } from "react-native";
 import * as eva from '@eva-design/eva';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as SecureStore from 'expo-secure-store';
-import { refreshAccessToken } from '../../services/authService';
+import { refreshAccessToken, getProfile } from '../../services/authService';
 import { jwtDecode } from 'jwt-decode';
 
 
@@ -76,12 +76,35 @@ function HeaderProfileButton() {
 
     checkLoginStatus();
   }, []);
+  useEffect(() => {
+    const getProfileInfo = async () => {
+      try {
+        const profileInfo = await getProfile();
+        console.log('Profile Info:', profileInfo);
+        if(profileInfo.nickname == null)
+        {
+          const email = await SecureStore.getItemAsync('userEmail')
+          if(email)
+            profileInfo.nickname = email.split('@')[0]
+        }
+        await SecureStore.setItemAsync('nickname', profileInfo.nickname);
+        if(profileInfo.avatarPath !=null)
+          await SecureStore.setItemAsync('avatarPath', profileInfo.avatarPath);
+      } catch (error) {
+        //console.error('Error getting profile information: ', error);
+      }
+    };
+
+    getProfileInfo();
+  }, []); 
 
   // sterge token-urile daca userul apasa pe log out
   const handleLogout = async () => {
-    await SecureStore.deleteItemAsync('accessToken');
-    await SecureStore.deleteItemAsync('refreshToken');
-    await SecureStore.deleteItemAsync('userEmail');
+    const keys = ['accessToken', 'refreshToken', 'userEmail', 'nickname', 'avatarPath', 'avatarUri']; 
+
+  for (const key of keys) {
+    await SecureStore.deleteItemAsync(key);
+  }
     setIsLoggedIn(false);
     router.push('../login');
   };
@@ -90,12 +113,15 @@ function HeaderProfileButton() {
     try {
       const decoded: { exp: number } = jwtDecode(token); 
       const currentTime = Math.floor(Date.now() / 1000);
+      console.log("token exp; ", decoded.exp < currentTime)
       return decoded.exp < currentTime;
     } catch (error) {
       console.error('Error decoding token:', error);
       return true;
     }
   };
+
+
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
