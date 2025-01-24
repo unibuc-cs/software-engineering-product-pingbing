@@ -13,9 +13,9 @@ const SignupPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for password visibility
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false); // State for confirm password visibility
-  const [passwordError, setPasswordError] = useState(''); // State for password error message
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); 
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false); 
+  const [passwordError, setPasswordError] = useState(''); 
 
   const handleSignup = async () => {
     if (password !== confirmPassword) {
@@ -31,7 +31,6 @@ const SignupPage: React.FC = () => {
     } catch (error: unknown) {
       console.error('Sign Up error:', error);
       if (error instanceof AxiosError && error.response && error.response.data) {
-        // Check if the error is related to password validation
         if (error.response.data.includes('Passwords must be at least 6 characters') || 
             error.response.data.includes('Passwords must have at least one non alphanumeric character') || 
             error.response.data.includes('Passwords must have at least one digit') || 
@@ -51,28 +50,28 @@ const SignupPage: React.FC = () => {
   };
 
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible); // Toggle password visibility
+    setIsPasswordVisible(!isPasswordVisible); 
   };
 
   const toggleConfirmPasswordVisibility = () => {
-    setIsConfirmPasswordVisible(!isConfirmPasswordVisible); // Toggle confirm password visibility
+    setIsConfirmPasswordVisible(!isConfirmPasswordVisible); 
   };
 
   const renderPasswordIcon = () => (
     <FontAwesome
-      name={isPasswordVisible ? 'eye' : 'eye-slash'} // Use 'eye' for visible and 'eye-slash' for hidden
+      name={isPasswordVisible ? 'eye' : 'eye-slash'} 
       color="#8F9BB3"
       size={24}
-      onPress={togglePasswordVisibility} // Toggle on press
+      onPress={togglePasswordVisibility} 
     />
   );
 
   const renderConfirmPasswordIcon = () => (
     <FontAwesome
-      name={isConfirmPasswordVisible ? 'eye' : 'eye-slash'} // Use 'eye' for visible and 'eye-slash' for hidden
+      name={isConfirmPasswordVisible ? 'eye' : 'eye-slash'} 
       color="#8F9BB3"
       size={24}
-      onPress={toggleConfirmPasswordVisibility} // Toggle on press
+      onPress={toggleConfirmPasswordVisibility} 
     />
   );
 
@@ -93,22 +92,22 @@ const SignupPage: React.FC = () => {
           label="Password"
           placeholder="Enter your password"
           value={password}
-          secureTextEntry={!isPasswordVisible} // Toggle secureTextEntry based on state
+          secureTextEntry={!isPasswordVisible} 
           onChangeText={setPassword}
           style={styles.input}
-          accessoryRight={renderPasswordIcon} // Add icon to toggle visibility
+          accessoryRight={renderPasswordIcon} 
         />
         
         <Input
           label="Confirm Password"
           placeholder="Confirm your password"
           value={confirmPassword}
-          secureTextEntry={!isConfirmPasswordVisible} // Toggle secureTextEntry based on state
+          secureTextEntry={!isConfirmPasswordVisible} 
           onChangeText={setConfirmPassword}
           style={styles.input}
-          accessoryRight={renderConfirmPasswordIcon} // Add icon to toggle visibility
+          accessoryRight={renderConfirmPasswordIcon} 
         />
-        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>} {/* Display error message */}
+        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>} 
         <Button onPress={handleSignup} status = "warning" disabled={loading} style={styles.button}>
                   {loading ? 'Signing up...' : 'Sign up'}
                 </Button>
@@ -146,9 +145,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   errorText: {
-    color: 'red', // Error text color
-    fontSize: 14,  // Font size for error messages
-    marginTop: 5,  // Margin between input and error text
+    color: 'red', 
+    fontSize: 14,
+    marginTop: 5,  
   }
 });
 
