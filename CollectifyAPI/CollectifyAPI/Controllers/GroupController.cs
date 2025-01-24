@@ -8,6 +8,8 @@ using System.Security.Claims;
 
 namespace CollectifyAPI.Controllers
 {
+    [ApiController]
+    [Route("api/groups")]
     public class GroupController : Controller
     {
         private readonly GroupService _groupService;

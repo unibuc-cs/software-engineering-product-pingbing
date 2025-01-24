@@ -20,16 +20,16 @@ export default function RootLayout() {
       />
 
       <Stack.Screen
-        name="spaces/[item]"
+        name="groups/[item]"
         options={{
-          title: "Space"
+          title: "Spaces"
         }}
       />
 
       <Stack.Screen
         name="notes/[item]"
         options={{
-          title: "Note"
+          title: "Notes"
         }}
       />
     </Stack>

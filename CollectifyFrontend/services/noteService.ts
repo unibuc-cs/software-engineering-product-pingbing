@@ -59,6 +59,34 @@ export const getNote = async (id: string) => {
   }
 };
 
+export const getNotesByGroupId = async (groupId: string) => {
+  try {
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+
+    const response = await api.get(`/api/notes/get_notes_from_group`, {
+      params: {
+        groupId,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error fetching notes from group:', error.response?.data || error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
+    throw error;
+  }
+};
+
 export const addNote = async (title: string, content: string) => {
   try {
     // Retrieve the access token from secure storage

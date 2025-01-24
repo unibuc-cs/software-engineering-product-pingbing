@@ -34,7 +34,7 @@ export default function TabLayout() {
         }} />
 
       <Tabs.Screen 
-        name="spaces" 
+        name="groups" 
         options={{
             title: 'My Spaces',
             headerRight: () => <HeaderProfileButton />,
