@@ -87,7 +87,7 @@ export const getNotesByGroupId = async (groupId: string) => {
   }
 };
 
-export const addNote = async (title: string, content: string) => {
+export const addNote = async (title: string, content: string, groupId: string | null = null) => {
   try {
     // Retrieve the access token from secure storage
     const accessToken = await SecureStore.getItemAsync('accessToken');
@@ -102,6 +102,7 @@ export const addNote = async (title: string, content: string) => {
       {
         title,   // Title of the note
         content, // Content of the note
+        groupId, // Group ID to associate the note with
       },
       {
         headers: {
@@ -120,6 +121,7 @@ export const addNote = async (title: string, content: string) => {
     throw error;
   }
 };
+
 
 export const deleteNote = async (id: string) => {
   try {

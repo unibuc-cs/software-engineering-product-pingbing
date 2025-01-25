@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-kitten/components';
-import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import * as eva from '@eva-design/eva';
-import { getNotesByGroupId, addNote } from '../../services/noteService'; // Import the API function
+import { getNotesByGroupId, addNote, deleteNote } from '../../services/noteService';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
-interface Note {
+type Note = {
   id: string;
   title: string;
   content: string;
-}
+};
 
 export default function FolderScreen() {
-  const { groupId, groupName } = useLocalSearchParams(); // Get both groupId and groupName from route params
-  const [notes, setNotes] = useState<Note[]>([]); // State to store notes
+  const router = useRouter();
+  const { item: groupId, groupName } = useLocalSearchParams<{ item: string; groupName: string }>();
+  const [notes, setNotes] = useState<Note[]>([]); // State for notes
   const [loading, setLoading] = useState(true); // State for loading
   const [error, setError] = useState<string | null>(null); // State for errors
 
@@ -23,9 +25,10 @@ export default function FolderScreen() {
       try {
         setLoading(true);
         setError(null);
-
+    
         if (groupId) {
-          const fetchedNotes = await getNotesByGroupId(groupId as string); // Fetch notes by group ID
+          const fetchedData = await getNotesByGroupId(groupId as string);          
+          const fetchedNotes = fetchedData.$values ? fetchedData.$values : []; 
           setNotes(fetchedNotes);
         }
       } catch (err) {
@@ -42,10 +45,21 @@ export default function FolderScreen() {
   // Render note items
   const renderNote = ({ item }: { item: Note }) => (
     <ListItem
-      title={`📝 ${item.title}`}
-      description={item.content} // Optionally display content as description
-      style={styles.listItem}
-      onPress={() => alert(`Opening: ${item.title}`)} // Replace with navigation logic if needed
+      title={() => (
+        <View style={styles.noteContainer}>
+          <Text style={styles.title}>📝 { item.title }</Text>
+          <TouchableOpacity onPress={() => deleteNote(item.id)}>
+            <FontAwesome5 name="trash-alt" size={18} color="red" />
+          </TouchableOpacity>
+        </View>
+    )}
+    onPress={() =>
+      router.push({
+        pathname: '../notes/[item]',
+        params: { item: item.id },
+      })
+    }
+    style={styles.listItem}
     />
   );
 
@@ -72,15 +86,24 @@ export default function FolderScreen() {
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <Layout style={styles.container}>
-      <Text category="h4" style={styles.title}> 
-        📁 {Array.isArray(groupName) ? groupName.join(', ') : groupName }
-      </Text>        
-      <List
+        <Text category="h4" style={styles.title}>
+          📁 {Array.isArray(groupName) ? groupName.join(', ') : groupName}
+        </Text>
+        <List
           data={notes}
           renderItem={renderNote}
-          keyExtractor={(note) => note.id}
+          keyExtractor={(note) => note.id.toString()} // Ensure note.id is a string
           style={styles.list}
         />
+        <Button
+          status="warning"
+          onPress={() => {
+            addNote('New Note', '', groupId as string);
+          }}
+          style={styles.newNoteButton}
+        >
+          New Note
+        </Button>
       </Layout>
     </ApplicationProvider>
   );
@@ -95,15 +118,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   list: {
-    marginTop: 10,
+    marginHorizontal: 10,
   },
   listItem: {
-    marginVertical: 2,
+    marginVertical: 4,
+    height: 70,
+    justifyContent: 'center',
   },
   newNoteButton: {
     width: '90%',
     borderRadius: 8,
     alignSelf: 'center',
-    marginBottom: 10
+    marginBottom: 10,
+  },
+  noteContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginRight: 10
   },
 });

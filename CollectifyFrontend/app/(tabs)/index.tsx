@@ -70,7 +70,7 @@ export default function NotesScreen() {
         <Button
           status="warning"
           onPress={() => {
-            addNote('New Note', '');
+            addNote('New Note', '', null);
           }}
           style={styles.newNoteButton}
         >
