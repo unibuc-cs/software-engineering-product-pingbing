@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Text, Input, Button, ApplicationProvider } from '@ui-kitten/components';
+import { Layout, Text, Input, ApplicationProvider } from '@ui-kitten/components';
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import * as eva from '@eva-design/eva';
-import { getNote } from '../../services/noteService';
+import { getNote, updateNote } from '../../services/noteService';
 
 export default function NoteScreen() {
   const { item } = useLocalSearchParams(); // Get note id from params
@@ -29,6 +29,24 @@ export default function NoteScreen() {
     fetchNote();
   }, [item]);
 
+  useEffect(() => {
+    // Save the note when the component unmounts
+    return () => {
+      const saveNote = async () => {
+        try {
+          if (item) {
+            await updateNote(item as string, noteTitle, noteContent);
+            console.log('Note updated successfully!');
+          }
+        } catch (error) {
+          console.error('Error saving the note:', error);
+        }
+      };
+
+      saveNote();
+    };
+  }, [noteTitle, noteContent]);
+
   if (loading) {
     return (
       <ApplicationProvider {...eva} theme={eva.light}>
@@ -48,14 +66,8 @@ export default function NoteScreen() {
             multiline={true}
             textStyle={{ minHeight: 150 }}
             value={noteContent}
+            onChangeText={setNoteContent}
         />
-        <Button
-            style={styles.button}
-            status="success"
-            onPress={() => alert('Note saved!')}
-        >
-            Save Note
-        </Button>
         </Layout>
     </ApplicationProvider>
   );
@@ -71,8 +83,5 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 20,
-  },
-  button: {
-    marginTop: 10,
-  },
+  }
 });

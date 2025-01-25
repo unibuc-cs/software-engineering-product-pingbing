@@ -122,6 +122,40 @@ export const addNote = async (title: string, content: string, groupId: string | 
   }
 };
 
+export const updateNote = async (id: string, title: string, content: string) => {
+  try {
+    // Retrieve the access token from secure storage
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+
+    // Send a PUT request to the update_note endpoint
+    const response = await api.put(
+      '/api/notes/update_note',
+      {
+        id,  // ID of the note to update
+        title,       // Updated title
+        content,     // Updated content
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+        },
+      }
+    );
+
+    return response.data; // Assuming the response contains the updated note details
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error updating the note', error.response?.data || error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
+    throw error;
+  }
+};
 
 export const deleteNote = async (id: string) => {
   try {
