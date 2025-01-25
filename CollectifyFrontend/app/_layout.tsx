@@ -8,21 +8,28 @@ export default function RootLayout() {
       <Stack.Screen
         name="profile"
         options={{
-          title: "User Profile"
+          title: ""
         }}
       />
 
       <Stack.Screen
-        name="spaces/[item]"
+        name="login"
         options={{
-          title: "Space"
+          title: ""
+        }}
+      />
+
+      <Stack.Screen
+        name="groups/[item]"
+        options={{
+          title: "Spaces"
         }}
       />
 
       <Stack.Screen
         name="notes/[item]"
         options={{
-          title: "Note"
+          title: "Notes"
         }}
       />
     </Stack>

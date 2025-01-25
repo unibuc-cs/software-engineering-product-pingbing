@@ -3,50 +3,65 @@ import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-k
 import { StyleSheet, ListRenderItem, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as eva from '@eva-design/eva';
-import { getOwnedNotes, addNote, deleteNote } from '../../services/noteService';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { GetGroupsByMemberId, addGroup } from '../../services/groupService';
 
-interface Note {
+interface Group {
   id: string;
-  title: string;
+  name: string;
+  creatorId: string;
 }
 
-export default function NotesScreen() {
+export default function GroupsScreen() {
   const router = useRouter();
-  const [notes, setNotes] = useState<Note[]>([]); // State for notes
-  const [loading, setLoading] = useState(true); // State for loading
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch notes when the component mounts
+  // Fetch groups when the component mounts
   useEffect(() => {
-    const fetchNotes = async () => {
+    const fetchGroups = async () => {
       try {
-        const fetchedNotes = await getOwnedNotes();
-        setNotes(fetchedNotes.map((note: { id: string; title: string }) => ({ id: note.id, title: note.title })));
+        const fetchedGroups = await GetGroupsByMemberId();
+        
+        // Check if fetchedGroups.$values exists and is an array
+        if (!fetchedGroups || !Array.isArray(fetchedGroups.$values)) {
+          console.error('Fetched groups is not an array:', fetchedGroups);
+          return;
+        }
+  
+        // Map the $values array to extract group details
+        setGroups(
+          fetchedGroups.$values.map((group: { id: string; name: string; creatorId: string }) => ({
+            id: group.id,
+            name: group.name,
+            creatorId: group.creatorId,
+          }))
+        );
       } catch (error) {
-        console.error('Error fetching notes:', error);
+        console.error('Error fetching groups:', error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchNotes();
+  
+    fetchGroups();
   }, []);
+  
 
-  // Render note items
-  const renderNote: ListRenderItem<Note> = ({ item }) => (
+  // Render group items
+  const renderGroup: ListRenderItem<Group> = ({ item }) => (
     <ListItem
       title={() => (
-        <View style={styles.noteContainer}>
-          <Text style={styles.title}>📝 { item.title }</Text>
-          <TouchableOpacity onPress={() => deleteNote(item.id)}>
-            <FontAwesome5 name="trash-alt" size={18} color="red" />
-          </TouchableOpacity>
+        <View style={styles.groupContainer}>
+          <Text style={styles.name}>📁 {item.name}</Text>
         </View>
       )}
       onPress={() =>
         router.push({
-          pathname: '../notes/[item]',
-          params: { item: item.id }, // Pass the dynamic item as params
+          pathname: '../groups/[item]',
+          params: {
+            item: item.id,
+            groupName: item.name,
+          },
         })
       }
       style={styles.listItem}
@@ -57,7 +72,7 @@ export default function NotesScreen() {
     return (
       <ApplicationProvider {...eva} theme={eva.light}>
         <Layout style={styles.loadingContainer}>
-          <Text>Loading Notes...</Text>
+          <Text>Loading Groups...</Text>
         </Layout>
       </ApplicationProvider>
     );
@@ -66,17 +81,16 @@ export default function NotesScreen() {
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <Layout style={styles.container}>
-        <List data={notes} renderItem={renderNote} style={styles.list} />
+        <List data={groups} renderItem={renderGroup} style={styles.list} />
         <Button
           status="warning"
           onPress={() => {
-            addNote('New Note', '', null);
+            addGroup('New Space');
           }}
-          style={styles.newNoteButton}
+          style={styles.newGroupButton}
         >
-          New Note
+          New space
         </Button>
-
       </Layout>
     </ApplicationProvider>
   );
@@ -102,19 +116,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F7F9FC',
   },
-  title: {
+  name: {
     fontSize: 18,
   },
-  newNoteButton: {
+  newGroupButton: {
     width: '90%',
     borderRadius: 8,
     alignSelf: 'center',
     marginBottom: 10
   },
-  noteContainer: {
+  groupContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginRight: 10
+    marginRight: 10,
   },
 });
