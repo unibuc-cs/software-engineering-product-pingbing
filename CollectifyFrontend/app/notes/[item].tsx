@@ -11,6 +11,9 @@ export default function NoteScreen() {
   const [noteContent, setNoteContent] = useState(''); // State for the note content
   const [loading, setLoading] = useState(true); // State for loading
 
+  // A timeout ID to manage debounce
+  let debounceTimeout: NodeJS.Timeout;
+
   useEffect(() => {
     const fetchNote = async () => {
       try {
@@ -29,23 +32,20 @@ export default function NoteScreen() {
     fetchNote();
   }, [item]);
 
-  useEffect(() => {
-    // Save the note when the component unmounts
-    return () => {
-      const saveNote = async () => {
-        try {
-          if (item) {
-            await updateNote(item as string, noteTitle, noteContent);
-            console.log('Note updated successfully!');
-          }
-        } catch (error) {
-          console.error('Error saving the note:', error);
+  // Debounced updateNote function
+  const debouncedSaveNote = (content: string, title: string) => {
+    clearTimeout(debounceTimeout); // Clear previous timeout
+    debounceTimeout = setTimeout(async () => {
+      try {
+        if (item) {
+          await updateNote(item as string, title, content); // Save the updated note content
+          console.log('Note updated successfully!');
         }
-      };
-
-      saveNote();
-    };
-  }, [noteTitle, noteContent]);
+      } catch (error) {
+        console.error('Error saving the note:', error);
+      }
+    }, 1000); // Adjust debounce delay as needed (e.g., 1000ms = 1 second)
+  };
 
   if (loading) {
     return (
@@ -59,29 +59,53 @@ export default function NoteScreen() {
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
-        <Layout style={styles.container}>
-        <Text category="h4" style={styles.title}>📝 {noteTitle}</Text>
+      <Layout style={styles.container}>
+        {/* Title section */}
         <Input
-            style={styles.input}
-            multiline={true}
-            textStyle={{ minHeight: 150 }}
-            value={noteContent}
-            onChangeText={setNoteContent}
+          style={styles.titleInput}
+          textStyle={{ fontSize: 24, fontWeight: 'bold' }}
+          value={noteTitle}
+          onChangeText={(text) => {
+            setNoteTitle(text); // Update local state
+            debouncedSaveNote(noteContent, text); // Call debounced save
+          }}
         />
-        </Layout>
+
+        {/* Note content */}
+        <Input
+          style={styles.contentInput}
+          multiline={true}
+          textStyle={{ minHeight: '100%', textAlignVertical: 'top' }}
+          value={noteContent}
+          onChangeText={(text) => {
+            setNoteContent(text); // Update local state
+            debouncedSaveNote(text, noteTitle); // Call debounced save
+          }}
+          autoFocus
+        />
+      </Layout>
     </ApplicationProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // Make container fill the screen
     padding: 20,
   },
-  title: {
+  titleText: {
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
-  input: {
-    marginBottom: 20,
-  }
+  titleInput: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    backgroundColor: 'white',
+  },
+  contentInput: {
+    flex: 1, // Make input box take remaining screen space
+    backgroundColor: 'white',
+  },
 });

@@ -13,6 +13,13 @@ export default function RootLayout() {
       />
 
       <Stack.Screen
+        name="editProfile"
+        options={{
+          title: ""
+        }}
+      />
+
+      <Stack.Screen
         name="login"
         options={{
           title: ""
