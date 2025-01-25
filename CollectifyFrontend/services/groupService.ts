@@ -91,3 +91,31 @@ export const addGroup = async (name: string) => {
     throw error;
   }
 };
+
+export const deleteGroup = async (id: string) => {
+  try {
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+
+    const response = await api.delete('/api/groups/delete_group', {
+      params: {
+        groupId: id,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error deleting the group', error.response?.data || error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
+    throw error;
+  }
+};
