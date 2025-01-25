@@ -3,7 +3,8 @@ import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-k
 import { StyleSheet, ListRenderItem, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as eva from '@eva-design/eva';
-import { GetGroupsByMemberId, addGroup } from '../../services/groupService';
+import { GetGroupsByMemberId, addGroup, deleteGroup } from '../../services/groupService';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 interface Group {
   id: string;
@@ -53,6 +54,9 @@ export default function GroupsScreen() {
       title={() => (
         <View style={styles.groupContainer}>
           <Text style={styles.name}>📁 {item.name}</Text>
+          <TouchableOpacity onPress={() => deleteGroup(item.id)}>
+            <FontAwesome5 name="trash-alt" size={18} color="red" />
+          </TouchableOpacity>
         </View>
       )}
       onPress={() =>
