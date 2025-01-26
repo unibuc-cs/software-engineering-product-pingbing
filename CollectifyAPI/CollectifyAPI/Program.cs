@@ -3,6 +3,7 @@ using CollectifyAPI.Data;
 using CollectifyAPI.Services;
 using CollectifyAPI.Repositories;
 using Microsoft.Extensions.FileProviders;
+using CollectifyAPI.Controllers;
 
 
 
@@ -43,12 +44,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+var staticFilesPath = Path.Combine(Directory.GetCurrentDirectory(), "static");
+if (!Directory.Exists(staticFilesPath))
+{
+    Directory.CreateDirectory(staticFilesPath);
+}
+if (!Directory.Exists(Path.Combine(staticFilesPath, "avatars")))
+{
+    Directory.CreateDirectory(Path.Combine(staticFilesPath, "avatars"));
+}
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "static")),
+        Path.Combine(staticFilesPath)),
     RequestPath = "/static"
 });
+
 //app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
