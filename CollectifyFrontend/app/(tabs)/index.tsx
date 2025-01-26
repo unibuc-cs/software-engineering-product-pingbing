@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-kitten/components';
 import { StyleSheet, ListRenderItem, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import * as eva from '@eva-design/eva';
 import { getOwnedNotes, addNote, deleteNote } from '../../services/noteService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -15,44 +16,47 @@ interface Note {
 export default function NotesScreen() {
   const router = useRouter();
   const [notes, setNotes] = useState<Note[]>([]); // State for notes
-  const [loading, setLoading] = useState(true); // State for loading
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
-
-  // Fetch notes when the component mounts
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const accessToken = await SecureStore.getItemAsync('accessToken');
-      if (accessToken) {
-        setIsLoggedIn(true);  // User is logged in
-        fetchNotes();  // Fetch notes if logged in
-      } else {
-        setIsLoggedIn(false); // User is not logged in
-        setLoading(false);  // No need to fetch notes if not logged in
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
 
   // Fetch notes
   const fetchNotes = async () => {
     try {
       const fetchedNotes = await getOwnedNotes();
-      setNotes(fetchedNotes.map((note: { id: string; title: string }) => ({ id: note.id, title: note.title })));
+      setNotes(
+        fetchedNotes.map((note: { id: string; title: string }) => ({
+          id: note.id,
+          title: note.title,
+        }))
+      );
     } catch (error) {
       console.error('Error fetching notes:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Check login status and fetch notes when the screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkLoginStatus = async () => {
+        const accessToken = await SecureStore.getItemAsync('accessToken');
+        if (accessToken) {
+          setIsLoggedIn(true); // User is logged in
+          fetchNotes(); // Fetch notes if logged in
+        } else {
+          setIsLoggedIn(false); // User is not logged in
+        }
+      };
+
+      checkLoginStatus();
+    }, [])
+  );
+
   const handleAddNote = async () => {
-    await addNote('New Note', '', null);  // Create a new note
+    await addNote('New Note', '', null); // Create a new note
     fetchNotes(); // Fetch the updated notes
   };
 
   const handleDeleteNote = async (noteId: string) => {
-    await deleteNote(noteId);  // Delete a note
+    await deleteNote(noteId); // Delete a note
     fetchNotes(); // Fetch the updated notes
   };
 
@@ -67,26 +71,16 @@ export default function NotesScreen() {
           </TouchableOpacity>
         </View>
       )}
-      onPress={() => {
+      onPress={() =>
         router.push({
           pathname: '../notes/[item]',
           params: { item: item.id },
-        });
-      }}
+        })
+      }
       style={styles.listItem}
       activeOpacity={0.7}
     />
   );
-
-  if (loading) {
-    return (
-      <ApplicationProvider {...eva} theme={eva.light}>
-        <Layout style={styles.loadingContainer}>
-          <Text>Loading Notes...</Text>
-        </Layout>
-      </ApplicationProvider>
-    );
-  }
 
   if (!isLoggedIn) {
     return (
@@ -129,48 +123,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 30,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   list: {
     marginHorizontal: 10,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   listItem: {
     marginVertical: 4,
     height: 70,
     justifyContent: 'center',
     borderRadius: 15,
-    backgroundColor: 'white'
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F7F9FC'
+    backgroundColor: 'white',
   },
   title: {
-    fontSize: 18
+    fontSize: 18,
   },
   newNoteButton: {
     width: '90%',
     borderRadius: 8,
     alignSelf: 'center',
-    marginBottom: 10
+    marginBottom: 10,
+    marginTop: 10,
   },
   noteContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginRight: 10
+    marginRight: 10,
   },
   backgroundImage: {
     flex: 1,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
 });

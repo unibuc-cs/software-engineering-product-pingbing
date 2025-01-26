@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-kitten/components';
-import { StyleSheet, ListRenderItem, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, ListRenderItem, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import * as eva from '@eva-design/eva';
 import { GetGroupsByMemberId, addGroup, deleteGroup } from '../../services/groupService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -15,46 +16,62 @@ interface Group {
 export default function GroupsScreen() {
   const router = useRouter();
   const [groups, setGroups] = useState<Group[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  // Fetch groups when the component mounts
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const fetchedGroups = await GetGroupsByMemberId();
-        
-        // Check if fetchedGroups.$values exists and is an array
-        if (!fetchedGroups || !Array.isArray(fetchedGroups.$values)) {
-          console.error('Fetched groups is not an array:', fetchedGroups);
-          return;
-        }
-  
-        // Map the $values array to extract group details
-        setGroups(
-          fetchedGroups.$values.map((group: { id: string; name: string; creatorId: string }) => ({
-            id: group.id,
-            name: group.name,
-            creatorId: group.creatorId,
-          }))
-        );
-      } catch (error) {
-        console.error('Error fetching groups:', error);
-      } finally {
-        setLoading(false);
+  // Fetch groups
+  const fetchGroups = async () => {
+    try {
+      const fetchedGroups = await GetGroupsByMemberId();
+
+      if (!fetchedGroups || !Array.isArray(fetchedGroups.$values)) {
+        console.error('Fetched groups is not an array:', fetchedGroups);
+        return;
       }
-    };
-  
-    fetchGroups();
-  }, []);
-  
 
-  // Render group items
+      setGroups(
+        fetchedGroups.$values.map((group: { id: string; name: string; creatorId: string }) => ({
+          id: group.id,
+          name: group.name,
+          creatorId: group.creatorId,
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    }
+  };
+
+  // Call fetchGroups whenever the screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchGroups();
+    }, [])
+  );
+
+  // Handle adding a new group
+  const handleAddGroup = async () => {
+    try {
+      await addGroup('New Space');
+      fetchGroups(); // Refresh groups list
+    } catch (error) {
+      console.error('Error adding a group:', error);
+    }
+  };
+
+  // Handle deleting a group
+  const handleDeleteGroup = async (groupId: string) => {
+    try {
+      await deleteGroup(groupId);
+      fetchGroups(); // Refresh groups list
+    } catch (error) {
+      console.error('Error deleting a group:', error);
+    }
+  };
+
   const renderGroup: ListRenderItem<Group> = ({ item }) => (
     <ListItem
       title={() => (
         <View style={styles.groupContainer}>
           <Text style={styles.name}>📁 {item.name}</Text>
-          <TouchableOpacity onPress={() => deleteGroup(item.id)}>
+          <TouchableOpacity onPress={() => handleDeleteGroup(item.id)}>
             <FontAwesome5 name="trash-alt" size={18} color="red" />
           </TouchableOpacity>
         </View>
@@ -72,30 +89,27 @@ export default function GroupsScreen() {
     />
   );
 
-  if (loading) {
-    return (
-      <ApplicationProvider {...eva} theme={eva.light}>
-        <Layout style={styles.loadingContainer}>
-          <Text>Loading Groups...</Text>
-        </Layout>
-      </ApplicationProvider>
-    );
-  }
-
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
-      <Layout style={styles.container}>
-        <List data={groups} renderItem={renderGroup} style={styles.list} />
-        <Button
-          status="warning"
-          onPress={() => {
-            addGroup('New Space');
-          }}
-          style={styles.newGroupButton}
-        >
-          New space
-        </Button>
-      </Layout>
+      <ImageBackground
+        source={require('../../assets/images/loading_background.jpeg')}
+        style={styles.backgroundImage}
+      >
+        <Layout style={styles.container}>
+          {groups.length > 0 ? (
+            <List data={groups} renderItem={renderGroup} style={styles.list} />
+          ) : (
+            <Text style={styles.noGroupsText}>No groups available. Add a new group!</Text>
+          )}
+          <Button
+            status="warning"
+            onPress={handleAddGroup}
+            style={styles.newGroupButton}
+          >
+            New Space
+          </Button>
+        </Layout>
+      </ImageBackground>
     </ApplicationProvider>
   );
 }
@@ -104,21 +118,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 30,
-    backgroundColor: '#F7F9FC',
+    backgroundColor: 'transparent',
   },
   list: {
     marginHorizontal: 10,
+    backgroundColor: 'transparent',
   },
   listItem: {
     marginVertical: 4,
     height: 70,
     justifyContent: 'center',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F7F9FC',
+    borderRadius: 15,
+    backgroundColor: 'white',
   },
   name: {
     fontSize: 18,
@@ -127,12 +138,23 @@ const styles = StyleSheet.create({
     width: '90%',
     borderRadius: 8,
     alignSelf: 'center',
-    marginBottom: 10
+    marginBottom: 10,
+    marginTop:10,
   },
   groupContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginRight: 10,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  noGroupsText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#888',
+    marginVertical: 20,
   },
 });
