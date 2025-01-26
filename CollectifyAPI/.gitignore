@@ -397,7 +397,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Ignore files from static folder
-wwwroot/static/*
-# Except folders in static folder
-!wwwroot/static/*/
+# Ignore files static folder
+wwwroot/
+static/
