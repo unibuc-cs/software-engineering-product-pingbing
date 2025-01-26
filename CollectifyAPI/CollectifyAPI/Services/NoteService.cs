@@ -5,7 +5,6 @@ using CollectifyAPI.Dtos;
 using CollectifyAPI.Repositories;
 using CollectifyAPI.Helpers;
 using AutoMapper;
-using static Azure.Core.HttpHeader;
 
 namespace CollectifyAPI.Services
 {
@@ -93,7 +92,6 @@ namespace CollectifyAPI.Services
             if (userId != note.CreatorId && note.GroupId == null)
             {
                 throw new ActionResponseExceptions.ForbiddenAccessException("You can't update this note!");
-
             }
 
             if (updatedNote.Title != null)
@@ -104,7 +102,6 @@ namespace CollectifyAPI.Services
             {
                 note.Content = await Encrypter.Encrypt(updatedNote.Content);
             }
-
 
             await _noteRepository.Update(note);
 
@@ -128,7 +125,6 @@ namespace CollectifyAPI.Services
             if (userId != note.CreatorId && note.GroupId == null)
             {
                 throw new ActionResponseExceptions.ForbiddenAccessException("You can't delete this note!");
-
             }
 
             await _noteRepository.Delete(note);

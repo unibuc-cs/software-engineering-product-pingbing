@@ -2,7 +2,6 @@
 using CollectifyAPI.Data;
 using CollectifyAPI.Models;
 using CollectifyAPI.Services;
-using CollectifyAPI.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -282,6 +281,41 @@ namespace CollectifyAPI.Controllers
             try
             {
                 return Ok(await _groupService.GetGroupsByCreatorIdAsync(userId));
+            }
+            catch (ActionResponseExceptions.BaseException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred: " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("get_group")]
+        [Authorize]
+        public async Task<IActionResult> GetGroupById(Guid groupId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return NotFound();
+            }
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return BadRequest("You are not logged in!");
+            }
+
+            try
+            {
+                return Ok(await _groupService.GetGroupByIdAsync(groupId, userId));
             }
             catch (ActionResponseExceptions.BaseException ex)
             {
