@@ -92,6 +92,39 @@ export const addGroup = async (name: string) => {
   }
 };
 
+export const updateGroup = async (id: string, name: string) => {
+  try {
+    // Retrieve the access token from secure storage
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+
+    // Send a PUT request to the update_group endpoint
+    const response = await api.put(
+      '/api/groups/update_group',
+      {
+        id,   // ID of the group to update
+        name, // New group name
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Add the token in the Authorization header
+        },
+      }
+    );
+
+    return response.data; // Assuming the response contains the updated group
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error updating the group:', error.response?.data || error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
+    throw error;
+  }
+};
+
 export const deleteGroup = async (id: string) => {
   try {
     const accessToken = await SecureStore.getItemAsync('accessToken');
