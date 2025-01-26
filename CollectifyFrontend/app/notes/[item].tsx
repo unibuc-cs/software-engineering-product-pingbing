@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Text, Input, ApplicationProvider } from '@ui-kitten/components';
 import { useLocalSearchParams } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ImageBackground } from 'react-native';
 import * as eva from '@eva-design/eva';
 import { getNote, updateNote } from '../../services/noteService';
 
@@ -59,39 +59,45 @@ export default function NoteScreen() {
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
-      <Layout style={styles.container}>
-        {/* Title section */}
-        <Input
-          style={styles.titleInput}
-          textStyle={{ fontSize: 24, fontWeight: 'bold' }}
-          value={noteTitle}
-          onChangeText={(text) => {
-            setNoteTitle(text); // Update local state
-            debouncedSaveNote(noteContent, text); // Call debounced save
-          }}
-        />
-
-        {/* Note content */}
-        <Input
-          style={styles.contentInput}
-          multiline={true}
-          textStyle={{ minHeight: '100%', textAlignVertical: 'top' }}
-          value={noteContent}
-          onChangeText={(text) => {
-            setNoteContent(text); // Update local state
-            debouncedSaveNote(text, noteTitle); // Call debounced save
-          }}
-          autoFocus
-        />
-      </Layout>
+      <ImageBackground
+        source={require('../../assets/images/background.jpeg')} // Add your image path here
+        style={styles.backgroundImage}
+      >
+        <Layout style={styles.container}>
+          {/* Title section */}
+          <Input
+            style={styles.titleInput}
+            textStyle={{ fontSize: 24, fontWeight: 'bold' }}
+            value={noteTitle}
+            onChangeText={(text) => {
+              setNoteTitle(text); // Update local state
+              debouncedSaveNote(noteContent, text); // Call debounced save
+            }}
+          />
+  
+          {/* Note content */}
+          <Input
+            style={styles.contentInput}
+            multiline={true}
+            textStyle={{ minHeight: '100%', textAlignVertical: 'top' }}
+            value={noteContent}
+            onChangeText={(text) => {
+              setNoteContent(text); // Update local state
+              debouncedSaveNote(text, noteTitle); // Call debounced save
+            }}
+            autoFocus
+          />
+        </Layout>
+      </ImageBackground>
     </ApplicationProvider>
-  );
+  );  
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1, // Make container fill the screen
     padding: 20,
+    backgroundColor: 'transparent', // Make sure the container is transparent so the background image shows through
   },
   titleText: {
     fontSize: 24,
@@ -102,10 +108,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    backgroundColor: 'white',
+    backgroundColor: 'white', // Input background color
+    opacity: 0.9,
+    borderWidth: 0, // Remove input borders
+    borderRadius: 15,
   },
   contentInput: {
     flex: 1, // Make input box take remaining screen space
-    backgroundColor: 'white',
+    backgroundColor: 'white', // Input background color
+    opacity: 0.9,
+    borderWidth: 0, // Remove input borders
+    borderRadius: 15,
+  },
+  backgroundImage: {
+    flex: 1, // Ensures the image fills the screen
+    resizeMode: 'cover', // Ensures the image is properly scaled
   },
 });
