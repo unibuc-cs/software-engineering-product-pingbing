@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs } from "expo-router";
+import { Tabs, Stack } from "expo-router";
 import { ApplicationProvider, Button } from "@ui-kitten/components";
 import { useRouter } from "expo-router";
 import { View } from "react-native";
@@ -9,39 +9,73 @@ import * as SecureStore from 'expo-secure-store';
 import { refreshAccessToken, getProfile } from '../../services/authService';
 import { jwtDecode } from 'jwt-decode';
 
-
 export default function TabLayout() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // `null` indicates loading state
+
+  // Check login status
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const accessToken = await SecureStore.getItemAsync('accessToken');
+      if (accessToken) {
+        setIsLoggedIn(true); // User is logged in
+      } else {
+        setIsLoggedIn(false); // User is not logged in
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
+  if (!isLoggedIn) {
+    // Render only the Stack layout for logged-out users
+    return (
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: true,
+            headerTitle: () => <HeaderProfileButton />,
+            headerTitleAlign: "center",
+            title: "",
+          }}
+        />
+      </Stack>
+    );
+  }
+
+  // Render Tabs for logged-in users
   return (
     <Tabs
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: '#ffc94d',
         tabBarStyle: {
-          height: 60 // Increase the height of the footer
+          height: 60, // Increase the height of the footer
         },
         tabBarLabelStyle: {
-          fontSize: 16 // Increase the font size for the tab labels
-        }
+          fontSize: 16, // Increase the font size for the tab labels
+        },
       }}
     >
-      <Tabs.Screen 
+      <Tabs.Screen
         name="index"
         options={{
-            title: "My Notes",
-            headerRight: () => <HeaderProfileButton />,
-            tabBarIcon: ({ color, focused }) => (
-                <FontAwesome name={focused ? 'file' : 'file-o'} color={color} size={27} />
-            )
-        }} />
-
-      <Tabs.Screen 
-        name="groups" 
+          title: "My Notes",
+          headerRight: () => <HeaderProfileButton />,
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome name={focused ? 'file' : 'file-o'} color={color} size={27} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="groups"
         options={{
-            title: 'My Spaces',
-            headerRight: () => <HeaderProfileButton />,
-            tabBarIcon: ({ color, focused }) => (
-                <FontAwesome name={focused ? 'folder' : 'folder-o'} color={color} size={27} />
-            )
-        }} />
+          title: 'My Spaces',
+          headerRight: () => <HeaderProfileButton />,
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome name={focused ? 'folder' : 'folder-o'} color={color} size={27} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
@@ -50,19 +84,18 @@ function HeaderProfileButton() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // verifica daca userul este logat
-  // daca token-ul de acces este expirat, ii da refresh
+  // Check login status
   useEffect(() => {
     const checkLoginStatus = async () => {
       const accessToken = await SecureStore.getItemAsync('accessToken');
-      
+
       if (accessToken) {
         const isExpired = isTokenExpired(accessToken);
 
         if (isExpired) {
           try {
-            await refreshAccessToken(); 
-            setIsLoggedIn(true); 
+            await refreshAccessToken();
+            setIsLoggedIn(true);
           } catch (error) {
             setIsLoggedIn(false);
           }
@@ -76,31 +109,9 @@ function HeaderProfileButton() {
 
     checkLoginStatus();
   }, []);
-  useEffect(() => {
-    const getProfileInfo = async () => {
-      try {
-        const profileInfo = await getProfile();
-        console.log('Profile Info:', profileInfo);
-        if(profileInfo.nickname == null)
-        {
-          const email = await SecureStore.getItemAsync('userEmail')
-          if(email)
-            profileInfo.nickname = email.split('@')[0]
-        }
-        await SecureStore.setItemAsync('nickname', profileInfo.nickname);
-        if(profileInfo.avatarPath !=null)
-          await SecureStore.setItemAsync('avatarPath', profileInfo.avatarPath);
-      } catch (error) {
-        //console.error('Error getting profile information: ', error);
-      }
-    };
 
-    getProfileInfo();
-  }, []); 
-
-  // sterge token-urile daca userul apasa pe log out
   const handleLogout = async () => {
-    const keys = ['accessToken', 'refreshToken', 'userEmail', 'nickname', 'avatarPath', 'avatarUri']; 
+    const keys = ['accessToken', 'refreshToken', 'userEmail', 'nickname', 'avatarPath', 'avatarUri'];
 
     for (const key of keys) {
       await SecureStore.deleteItemAsync(key);
@@ -111,17 +122,14 @@ function HeaderProfileButton() {
 
   const isTokenExpired = (token: string): boolean => {
     try {
-      const decoded: { exp: number } = jwtDecode(token); 
+      const decoded: { exp: number } = jwtDecode(token);
       const currentTime = Math.floor(Date.now() / 1000);
-      console.log("token exp; ", decoded.exp < currentTime)
       return decoded.exp < currentTime;
     } catch (error) {
       console.error('Error decoding token:', error);
       return true;
     }
   };
-
-
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
@@ -152,6 +160,7 @@ function HeaderProfileButton() {
             appearance="filled"
             status="warning"
             onPress={() => router.push('../login')}
+            style={{ width: "100%", marginLeft: 5 }}
           >
             Log In
           </Button>
@@ -160,5 +169,3 @@ function HeaderProfileButton() {
     </ApplicationProvider>
   );
 }
-  
-
