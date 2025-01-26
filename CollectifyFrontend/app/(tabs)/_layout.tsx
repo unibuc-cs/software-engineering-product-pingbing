@@ -102,9 +102,9 @@ function HeaderProfileButton() {
   const handleLogout = async () => {
     const keys = ['accessToken', 'refreshToken', 'userEmail', 'nickname', 'avatarPath', 'avatarUri']; 
 
-  for (const key of keys) {
-    await SecureStore.deleteItemAsync(key);
-  }
+    for (const key of keys) {
+      await SecureStore.deleteItemAsync(key);
+    }
     setIsLoggedIn(false);
     router.push('../login');
   };
