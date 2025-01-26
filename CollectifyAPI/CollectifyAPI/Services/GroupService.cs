@@ -3,7 +3,6 @@ using CollectifyAPI.Data;
 using CollectifyAPI.Models;
 using CollectifyAPI.Dtos;
 using CollectifyAPI.Repositories;
-using System.Security.Claims;
 using AutoMapper;
 
 namespace CollectifyAPI.Services
@@ -179,6 +178,23 @@ namespace CollectifyAPI.Services
             var groups = await _groupRepository.GetGroupsByMemberIdAsync(userId);
 
             return _mapper.Map<ICollection<SimpleGroup>>(groups);
+        }
+
+        public async Task<SimpleGroup> GetGroupByIdAsync(Guid groupId, string userId)
+        {
+            var group = await _groupRepository.GetByIdAsync(groupId);
+            if (group == null)
+            {
+                throw new ActionResponseExceptions.NotFoundException("Group not found!");
+            }
+
+            var members = await _groupRepository.GetMembersByGroupIdAsync(groupId);
+            if (!members.Any(m => m.MemberId == userId))
+            {
+                throw new ActionResponseExceptions.ForbiddenAccessException("You are not a member of this group!");
+            }
+
+            return _mapper.Map<SimpleGroup>(group);
         }
     }
 }
