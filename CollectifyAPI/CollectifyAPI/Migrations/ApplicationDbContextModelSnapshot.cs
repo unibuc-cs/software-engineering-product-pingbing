@@ -95,17 +95,17 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a761f656-6c13-4bf1-ab4c-df080af0b75b",
+                            Id = "021b4677-42ee-4a0d-91a6-b1e93b1f1e3b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fd17ff01-a947-4281-b185-1f9da4c9ab61",
+                            ConcurrencyStamp = "71880f39-b889-4e7d-932b-9b641cd68ef8",
                             Email = "admin@collectify-app.ro",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@COLLECTIFY-APP.RO",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKb9XHnT5imT1srscplGUu5iQfPqeg7DbOwDCT0zBBUxscpVFd0fGtke82GLOq3Njg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELq+xsw/RC7ONGQoVsWXlafynb61y8RrzQLIQt09I7nVJMWqRkX+uLazYz5yi6LrJQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9c5c5f6d-d447-425e-a973-d747b2e38619",
+                            SecurityStamp = "5261ed1f-67c1-49d9-aabb-3c2475446dfc",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -239,13 +239,13 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "731fbe7c-3d4f-42c1-92a7-efbc29b32fd1",
+                            Id = "b8768963-39fb-4894-a8b3-523287661807",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "3d17fc61-5b66-4127-9fa3-443ea26484d7",
+                            Id = "5f4b3f8d-cbe5-4c17-9eca-19abfa58c7be",
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -340,8 +340,8 @@ namespace CollectifyAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "a761f656-6c13-4bf1-ab4c-df080af0b75b",
-                            RoleId = "731fbe7c-3d4f-42c1-92a7-efbc29b32fd1"
+                            UserId = "021b4677-42ee-4a0d-91a6-b1e93b1f1e3b",
+                            RoleId = "b8768963-39fb-4894-a8b3-523287661807"
                         });
                 });
 
