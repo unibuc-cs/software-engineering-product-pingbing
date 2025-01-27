@@ -7,11 +7,17 @@ import * as eva from '@eva-design/eva';
 import { getOwnedNotes, addNote, deleteNote } from '../../services/noteService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import * as SecureStore from 'expo-secure-store';
+import { jwtDecode } from 'jwt-decode';
+import { refreshAccessToken } from '../../services/authService';
+
+
 
 interface Note {
   id: string;
   title: string;
 }
+
+
 
 export default function NotesScreen() {
   const router = useRouter();
@@ -39,8 +45,19 @@ export default function NotesScreen() {
       const checkLoginStatus = async () => {
         const accessToken = await SecureStore.getItemAsync('accessToken');
         if (accessToken) {
-          setIsLoggedIn(true); // User is logged in
-          fetchNotes(); // Fetch notes if logged in
+          const isExpired = isTokenExpired(accessToken);
+          if (isExpired) {
+            try {
+              await refreshAccessToken();
+              setIsLoggedIn(true);
+              fetchNotes(); // Fetch notes if logged in
+            } catch (error) {
+              setIsLoggedIn(false);
+            }
+          } else {
+            setIsLoggedIn(true);
+            fetchNotes(); // Fetch notes if logged in
+          }
         } else {
           setIsLoggedIn(false); // User is not logged in
         }
@@ -49,6 +66,17 @@ export default function NotesScreen() {
       checkLoginStatus();
     }, [])
   );
+
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const decoded: { exp: number } = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decoded.exp < currentTime;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return true;
+    }
+  };
 
   const handleAddNote = async () => {
     await addNote('New Note', '', null); // Create a new note
@@ -91,7 +119,16 @@ export default function NotesScreen() {
         >
           <Layout style={styles.centeredContainer}>
             <Text category="h1">Welcome to Collectify!</Text>
-            <Text category="h6">You need to log in to see your notes.</Text>
+            <Text category="h6">We're glad to have you here 🥳</Text>
+            <Button
+              size="medium"
+              appearance="filled"
+              status="warning"
+              onPress={() => router.push('../login')}
+              style={{ width: "50%", margin: 15 }}
+            >
+              Log In
+            </Button>
           </Layout>
         </ImageBackground>
       </ApplicationProvider>
@@ -118,6 +155,8 @@ export default function NotesScreen() {
     </ApplicationProvider>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
