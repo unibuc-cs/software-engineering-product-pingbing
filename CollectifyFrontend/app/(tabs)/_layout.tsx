@@ -6,24 +6,30 @@ import { View } from "react-native";
 import * as eva from '@eva-design/eva';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as SecureStore from 'expo-secure-store';
-import { refreshAccessToken, getProfile } from '../../services/authService';
-import { jwtDecode } from 'jwt-decode';
+
+
 
 export default function TabLayout() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // `null` indicates loading state
 
   // Check login status
+  const checkLoginStatus = async () => {
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+    if (accessToken) {
+      setIsLoggedIn(true); // User is logged in
+    } else {
+      setIsLoggedIn(false); // User is not logged in
+    }
+  };
+
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const accessToken = await SecureStore.getItemAsync('accessToken');
-      if (accessToken) {
-        setIsLoggedIn(true); // User is logged in
-      } else {
-        setIsLoggedIn(false); // User is not logged in
-      }
-    };
     checkLoginStatus();
   }, []);
+
+  if (isLoggedIn === null) {
+    // Render a loading state while login status is being determined
+    return <View />;
+  }
 
   if (!isLoggedIn) {
     // Render only the Stack layout for logged-out users
@@ -32,10 +38,7 @@ export default function TabLayout() {
         <Stack.Screen
           name="index"
           options={{
-            headerShown: true,
-            headerTitle: () => <HeaderProfileButton />,
-            headerTitleAlign: "center",
-            title: "",
+            headerShown: false
           }}
         />
       </Stack>
@@ -60,7 +63,9 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "My Notes",
-          headerRight: () => <HeaderProfileButton />,
+          headerRight: () => (
+            <HeaderProfileButton refreshLoginStatus={checkLoginStatus} />
+          ),
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome name={focused ? 'file' : 'file-o'} color={color} size={27} />
           ),
@@ -70,7 +75,9 @@ export default function TabLayout() {
         name="groups"
         options={{
           title: 'My Spaces',
-          headerRight: () => <HeaderProfileButton />,
+          headerRight: () => (
+            <HeaderProfileButton refreshLoginStatus={checkLoginStatus} />
+          ),
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome name={focused ? 'folder' : 'folder-o'} color={color} size={27} />
           ),
@@ -80,35 +87,10 @@ export default function TabLayout() {
   );
 }
 
-function HeaderProfileButton() {
+
+
+function HeaderProfileButton({ refreshLoginStatus }: { refreshLoginStatus: () => void }) {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Check login status
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const accessToken = await SecureStore.getItemAsync('accessToken');
-
-      if (accessToken) {
-        const isExpired = isTokenExpired(accessToken);
-
-        if (isExpired) {
-          try {
-            await refreshAccessToken();
-            setIsLoggedIn(true);
-          } catch (error) {
-            setIsLoggedIn(false);
-          }
-        } else {
-          setIsLoggedIn(true);
-        }
-      } else {
-        setIsLoggedIn(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
 
   const handleLogout = async () => {
     const keys = ['accessToken', 'refreshToken', 'userEmail', 'nickname', 'avatarPath', 'avatarUri'];
@@ -116,55 +98,31 @@ function HeaderProfileButton() {
     for (const key of keys) {
       await SecureStore.deleteItemAsync(key);
     }
-    setIsLoggedIn(false);
-    router.push('../login');
-  };
 
-  const isTokenExpired = (token: string): boolean => {
-    try {
-      const decoded: { exp: number } = jwtDecode(token);
-      const currentTime = Math.floor(Date.now() / 1000);
-      return decoded.exp < currentTime;
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return true;
-    }
+    refreshLoginStatus(); // Notify the parent to refresh the login state
+    router.push('../login'); // Redirect to the login page
   };
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
-        {isLoggedIn ? (
-          <>
-            <Button
-              size="small"
-              appearance="filled"
-              status="warning"
-              onPress={() => router.push('../profile')}
-              style={{ marginRight: 8 }}
-            >
-              Profile
-            </Button>
-            <Button
-              size="small"
-              appearance="ghost"
-              status="danger"
-              onPress={handleLogout}
-            >
-              Log Out
-            </Button>
-          </>
-        ) : (
-          <Button
-            size="small"
-            appearance="filled"
-            status="warning"
-            onPress={() => router.push('../login')}
-            style={{ width: "100%", marginLeft: 5 }}
-          >
-            Log In
-          </Button>
-        )}
+        <Button
+          size="small"
+          appearance="filled"
+          status="warning"
+          onPress={() => router.push('../profile')}
+          style={{ marginRight: 8 }}
+        >
+          Profile
+        </Button>
+        <Button
+          size="small"
+          appearance="ghost"
+          status="danger"
+          onPress={handleLogout}
+        >
+          Log Out
+        </Button>
       </View>
     </ApplicationProvider>
   );
