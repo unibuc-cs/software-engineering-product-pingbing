@@ -172,7 +172,7 @@ namespace CollectifyAPI.Tests
             // Arrange
             var groupMember = new GroupMember { MemberId = "user123", GroupId = Guid.NewGuid() };
 
-            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext());  // Mocking HttpContext
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext());  
 
             _mockGroupService.Setup(service => service.AddMemberToGroupAsync(groupMember))
                              .Returns(Task.CompletedTask);
@@ -212,7 +212,7 @@ namespace CollectifyAPI.Tests
             // Arrange
             var groupMember = new GroupMember {MemberId = "user123", GroupId = Guid.NewGuid()};
 
-            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext());  // Mocking HttpContext
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext());  
 
             _mockGroupService.Setup(service => service.RemoveMemberFromGroupAsync(groupMember))
                              .Returns(Task.CompletedTask);  
@@ -248,5 +248,100 @@ namespace CollectifyAPI.Tests
             var returnValue = Assert.IsType<SimpleGroup>(okResult.Value);
             Assert.Equal(group.Name, returnValue.Name);
         }
+
+        [Fact]
+        public async Task GetGroupById_UnauthorizedUser_ReturnsNotFound()
+        {
+            // Arrange
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns((HttpContext)null); 
+            var groupId = Guid.NewGuid();
+
+            // Act
+            var result = await _groupController.GetGroupById(groupId);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result); 
+        }
+
+
+        [Fact]
+        public async Task DeleteGroup_NotTheOwner_ReturnsForbidden()
+        {
+            // Arrange
+            var userId = "user123";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, userId) }));
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext { User = claimsPrincipal });
+
+            var groupId = Guid.NewGuid();
+            _mockGroupService.Setup(service => service.DeleteGroupAsync(groupId, userId))
+                .ThrowsAsync(new ActionResponseExceptions.ForbiddenAccessException("You are not the owner of this group!"));
+
+            // Act
+            var result = await _groupController.DeleteGroup(groupId);
+
+            // Assert
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(403, objectResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddMemberToGroup_GroupNotFound_ReturnsNotFound()
+        {
+            // Arrange
+            var userId = "user123";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, userId) }));
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext { User = claimsPrincipal });
+
+            var groupMember = new GroupMember { MemberId = "user456", GroupId = Guid.NewGuid() };
+            _mockGroupService.Setup(service => service.AddMemberToGroupAsync(groupMember))
+                .ThrowsAsync(new ActionResponseExceptions.NotFoundException("Group not found!"));
+
+            // Act
+            var result = await _groupController.AddMemberToGroup(groupMember);
+
+            // Assert
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(404, objectResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task RemoveMemberFromGroup_UnauthorizedUser_ReturnsNotFound()
+        {
+            // Arrange
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns((HttpContext)null); // No user authenticated
+            var groupMember = new GroupMember { MemberId = "user456", GroupId = Guid.NewGuid() };
+
+            // Act
+            var result = await _groupController.RemoveMemberFromGroup(groupMember);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result); // Update to match the actual result type
+        }
+
+        [Fact]
+        public async Task GetGroupsByMemberId_ValidRequest_ReturnsOk()
+        {
+            // Arrange
+            var userId = "user123";
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, userId) }));
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns(new DefaultHttpContext { User = claimsPrincipal });
+
+            var groups = new List<SimpleGroup>
+    {
+        new SimpleGroup { Id = Guid.NewGuid(), Name = "Group 1" },
+        new SimpleGroup { Id = Guid.NewGuid(), Name = "Group 2" }
+    };
+
+            _mockGroupService.Setup(service => service.GetGroupsByMemberIdAsync(userId)).ReturnsAsync(groups);
+
+            // Act
+            var result = await _groupController.GetGroupsByMemberId();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<List<SimpleGroup>>(okResult.Value);
+        }
+
     }
+
 }
