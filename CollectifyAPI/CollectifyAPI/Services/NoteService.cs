@@ -23,7 +23,7 @@ namespace CollectifyAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<SimpleNote> CreateNoteAsync(string userId, SimpleNote note)
+        public virtual async Task<SimpleNote> CreateNoteAsync(string userId, SimpleNote note)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -51,7 +51,7 @@ namespace CollectifyAPI.Services
             return _mapper.Map<SimpleNote>(newNote);
         }
 
-        public async Task<ICollection<SimpleNote>> GetOwnedNotesAsync(string userId)
+        public virtual async Task<ICollection<SimpleNote>> GetOwnedNotesAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -75,7 +75,7 @@ namespace CollectifyAPI.Services
             return await Task.WhenAll(decryptedNotesTasks);
         }
 
-        public async Task<SimpleNote> UpdateNoteAsync(string userId, SimpleNote updatedNote)
+        public virtual async Task<SimpleNote> UpdateNoteAsync(string userId, SimpleNote updatedNote)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -108,7 +108,7 @@ namespace CollectifyAPI.Services
             return updatedNote;
         }
 
-        public async Task DeleteNoteAsync(string userId, Guid id)
+        public virtual async Task DeleteNoteAsync(string userId, Guid id)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -130,7 +130,7 @@ namespace CollectifyAPI.Services
             await _noteRepository.Delete(note);
         }
 
-        public async Task<SimpleNote> GetNoteAsync(Guid id, string userId)
+        public virtual async Task<SimpleNote> GetNoteAsync(Guid id, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -152,7 +152,7 @@ namespace CollectifyAPI.Services
             return simpleNote;
         }
 
-        public async Task<ICollection<SimpleNote>> GetNotesByGroupIdAsync(Guid groupId)
+        public virtual async Task<ICollection<SimpleNote>> GetNotesByGroupIdAsync(Guid groupId)
         {
             var group = await _groupRepository.GetByIdAsync(groupId);
             if (group == null)
