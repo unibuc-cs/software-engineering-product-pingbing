@@ -41,6 +41,20 @@ export default function RootLayout() {
           title: "Notes"
         }}
       />
+
+      <Stack.Screen
+         name = "qrCode"
+         options={{
+          title: "QRCode"
+        }}
+        />
+         <Stack.Screen
+         name = "scan"
+         options={{
+          title: "Scan"
+        }}
+        />
+
     </Stack>
   );
 }

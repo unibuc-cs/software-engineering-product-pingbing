@@ -83,6 +83,30 @@ export default function TabLayout() {
           ),
         }}
       />
+       <Tabs.Screen
+        name="qrCode"
+        options={{
+          title: "QRCode",
+          headerRight: () => (
+            <HeaderProfileButton refreshLoginStatus={checkLoginStatus} />
+          ),
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome name={focused ? 'file' : 'file-o'} color={color} size={27} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: "Scan",
+          headerRight: () => (
+            <HeaderProfileButton refreshLoginStatus={checkLoginStatus} />
+          ),
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome name={focused ? 'file' : 'file-o'} color={color} size={27} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
