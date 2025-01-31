@@ -308,14 +308,14 @@ namespace CollectifyAPI.Tests
         public async Task RemoveMemberFromGroup_UnauthorizedUser_ReturnsNotFound()
         {
             // Arrange
-            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns((HttpContext)null); // No user authenticated
+            _mockHttpContextAccessor.Setup(h => h.HttpContext).Returns((HttpContext)null); 
             var groupMember = new GroupMember { MemberId = "user456", GroupId = Guid.NewGuid() };
 
             // Act
             var result = await _groupController.RemoveMemberFromGroup(groupMember);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result); // Update to match the actual result type
+            Assert.IsType<NotFoundResult>(result); 
         }
 
         [Fact]
