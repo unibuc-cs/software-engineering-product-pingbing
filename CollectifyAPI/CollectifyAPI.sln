@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35431.28
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollectifyAPI", "CollectifyAPI\CollectifyAPI.csproj", "{6EC59B5D-5CDC-4922-A652-1AC4E1B9AF88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollectifyAPI.Tests", "CollectifyAPI.Tests\CollectifyAPI.Tests.csproj", "{1440ABED-5611-4906-B8FC-E275401B8D41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6EC59B5D-5CDC-4922-A652-1AC4E1B9AF88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EC59B5D-5CDC-4922-A652-1AC4E1B9AF88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EC59B5D-5CDC-4922-A652-1AC4E1B9AF88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1440ABED-5611-4906-B8FC-E275401B8D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1440ABED-5611-4906-B8FC-E275401B8D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1440ABED-5611-4906-B8FC-E275401B8D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1440ABED-5611-4906-B8FC-E275401B8D41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

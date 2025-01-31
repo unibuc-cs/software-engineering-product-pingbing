@@ -20,7 +20,7 @@ namespace CollectifyAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<SimpleGroup> CreateGroupAsync(Group group, string userId)
+        public virtual async Task<SimpleGroup> CreateGroupAsync(Group group, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -36,7 +36,7 @@ namespace CollectifyAPI.Services
             return _mapper.Map<SimpleGroup>(group);
         }
         
-        public async Task<SimpleGroup> UpdateGroupAsync(Group updatedGroup, string userId)
+        public virtual async Task<SimpleGroup> UpdateGroupAsync(Group updatedGroup, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -62,7 +62,7 @@ namespace CollectifyAPI.Services
             return _mapper.Map<SimpleGroup>(group);
         }
         
-        public async Task DeleteGroupAsync(Guid groupId, string userId)
+        public virtual async Task DeleteGroupAsync(Guid groupId, string userId)
         {
             var group = await _groupRepository.GetByIdAsync(groupId);
             if (group == null)
@@ -84,7 +84,7 @@ namespace CollectifyAPI.Services
             await _groupRepository.Delete(group);
         }
 
-        public async Task AddMemberToGroupAsync(GroupMember groupMember)
+        public virtual async Task AddMemberToGroupAsync(GroupMember groupMember)
         {
             if (groupMember.MemberId == null || groupMember.GroupId == null)
             {
@@ -106,7 +106,7 @@ namespace CollectifyAPI.Services
             await _groupRepository.AddMemberToGroupAsync(groupMember.MemberId, groupMember.GroupId);
         }
 
-        public async Task RemoveMemberFromGroupAsync(GroupMember groupMember)
+        public virtual async Task RemoveMemberFromGroupAsync(GroupMember groupMember)
         {
             if (groupMember.MemberId == null || groupMember.GroupId == null)
             {
@@ -137,7 +137,7 @@ namespace CollectifyAPI.Services
             }
         }
 
-        public async Task<ICollection<UserProfile>> GetMembersByGroupIdAsync(Guid groupId)
+        public virtual async Task<ICollection<UserProfile>> GetMembersByGroupIdAsync(Guid groupId)
         {
             var group = await _groupRepository.GetByIdAsync(groupId);
             if (group == null)
@@ -155,7 +155,7 @@ namespace CollectifyAPI.Services
             }).ToList();
         }
 
-        public async Task<ICollection<SimpleGroup>> GetGroupsByCreatorIdAsync(string userId)
+        public virtual async Task<ICollection<SimpleGroup>> GetGroupsByCreatorIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -167,7 +167,7 @@ namespace CollectifyAPI.Services
             return _mapper.Map<ICollection<SimpleGroup>>(groups);
         }
 
-        public async Task<ICollection<SimpleGroup>> GetGroupsByMemberIdAsync(string userId)
+        public virtual async Task<ICollection<SimpleGroup>> GetGroupsByMemberIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -180,7 +180,7 @@ namespace CollectifyAPI.Services
             return _mapper.Map<ICollection<SimpleGroup>>(groups);
         }
 
-        public async Task<SimpleGroup> GetGroupByIdAsync(Guid groupId, string userId)
+        public virtual async Task<SimpleGroup> GetGroupByIdAsync(Guid groupId, string userId)
         {
             var group = await _groupRepository.GetByIdAsync(groupId);
             if (group == null)
