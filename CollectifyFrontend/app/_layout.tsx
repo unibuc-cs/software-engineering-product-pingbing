@@ -5,7 +5,11 @@ import { Stack } from "expo-router";
 export default function RootLayout() {
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen 
+      name="(tabs)" 
+      options={{ 
+        headerShown: false
+         }} />
 
       <Stack.Screen
         name="profile"
@@ -43,13 +47,13 @@ export default function RootLayout() {
       />
 
       <Stack.Screen
-         name = "qrCode"
+         name = "(tabs)/qrCode"
          options={{
           title: "QRCode"
         }}
         />
          <Stack.Screen
-         name = "scan"
+         name = "(tabs)/scan"
          options={{
           title: "Scan"
         }}

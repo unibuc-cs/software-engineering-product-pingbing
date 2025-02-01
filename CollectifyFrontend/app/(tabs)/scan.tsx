@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Text, StyleSheet, Button } from 'react-native';
-import { Layout, List, ListItem, ApplicationProvider } from '@ui-kitten/components';
-
-import { IStackScreenProps } from '../../src/library/IStackScreenProps';
+import { CameraView, Camera, BarcodeScanningResult } from 'expo-camera';
+import * as ImagePicker from "expo-image-picker";
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { useRouter } from 'expo-router';
 import { IQRCodePayload } from '../../src/library/IQRCodePayload';
- 
-const ScanScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
+
+const ScanScreen = () => {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [scanData, setScanData] = useState<IQRCodePayload>();
-    const [permission, setPermission] = useState(true);
+    const [permission, setPermission] = useState<boolean | null>(null);
 
     useEffect(() => {
         requestCameraPermission();
@@ -17,15 +17,8 @@ const ScanScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
 
     const requestCameraPermission = async () => {
         try {
-            const { status, granted } = await BarCodeScanner.requestPermissionsAsync();
-            console.log(`Status: ${status}, Granted: ${granted}`);
-
-            if (status === 'granted') {
-                console.log('Access granted');
-                setPermission(true);
-            } else {
-                setPermission(false);
-            }
+            const { status, granted } = await Camera.requestCameraPermissionsAsync();
+            setPermission(status === 'granted');
         } catch (error) {
             console.error(error);
             setPermission(false);
@@ -35,40 +28,31 @@ const ScanScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     };
 
     if (loading) return <Text>Requesting permission ...</Text>;
+    if (permission === false) return <Text>No access to camera</Text>;
 
-    if (scanData) {
-        return (
-            <>
-                <Text style={styles.text}>Name: {scanData.name}</Text>
-                <Text style={styles.text}>Number: {scanData.number}</Text>
-                {/* <Button title="Scan Again" onPress={() => setScanData(undefined)}>
-                    Scan Again
-                </Button> */}
-            </>
-        );
-    }
+    const handleBarcodeScanned = ({ type, data }: BarcodeScanningResult) => {
+        try {
+            console.log(type, data);
+            let _data = JSON.parse(data);
+            setScanData(_data);
+        } catch (error) {
+            console.error('Unable to parse QR code: ', error);
+        }
+        alert(`Scanned QR Code: ${data}`);
+    };
 
-    if (permission) {
-        return (
-            <BarCodeScanner
-                style={[styles.container]}
-                onBarCodeScanned={({ type, data }) => {
-                    try {
-                        console.log(type);
-                        console.log(data);
-                        let _data = JSON.parse(data);
-                        setScanData(_data);
-                    } catch (error) {
-                        console.error('Unable to parse string: ', error);
-                    }
-                }}
-            >
-                <Text style={styles.text}>Scan the QR code.</Text>
-            </BarCodeScanner>
-        );
-    } else {
-        return <Text style={styles.textError}>Permission rejected.</Text>;
-    }
+    return (
+        <View style={styles.container}>
+            <CameraView
+                onBarcodeScanned={scanData ? undefined : handleBarcodeScanned}
+                barcodeScannerSettings={{ barcodeTypes: ["qr", "pdf417"] }}
+                style={StyleSheet.absoluteFillObject}
+            />
+            {scanData && (
+                <Button title="Scan Again" onPress={() => setScanData(undefined)} />
+            )}
+        </View>
+    );
 };
 
 export default ScanScreen;
@@ -80,11 +64,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    text: {
-        marginTop: 15,
-        backgroundColor: 'white'
-    },
-    textError: {
-        color: 'red'
-    }
 });

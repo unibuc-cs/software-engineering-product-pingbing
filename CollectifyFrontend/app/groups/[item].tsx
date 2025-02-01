@@ -8,6 +8,7 @@ import { getNotesByGroupId, addNote, deleteNote } from '../../services/noteServi
 import { getGroup, updateGroup } from '../../services/groupService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
+
 type Note = {
   id: string;
   title: string;
@@ -120,6 +121,7 @@ export default function GroupNotesScreen() {
       >
         <Layout style={styles.container}>
           {/* Group Name Section */}
+        
           <Input
             style={styles.nameInput}
             textStyle={{ fontSize: 24, fontWeight: 'bold' }}
@@ -130,14 +132,26 @@ export default function GroupNotesScreen() {
             }}
             placeholder="Group Name"
           />
-
+          {/* QR Code Button */}
+          <View style={styles.qrButtonContainer}>
+              <Button
+                  status="info"
+                  onPress={() => router.push('/qrCode')} 
+                  style={styles.qrButton}
+              >
+                  Show QR Code
+              </Button>
+          </View>
+              
+      
+         
           {/* Notes List */}
           <List
             data={notes}
             renderItem={renderNote}
             keyExtractor={(note) => note.id.toString()} // Ensure note.id is a string
             style={styles.list}
-          />
+          /> 
           <Button
             status="warning"
             onPress={handleAddNote}
@@ -152,6 +166,14 @@ export default function GroupNotesScreen() {
 }
 
 const styles = StyleSheet.create({
+  qrButtonContainer: {
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  qrButton: {
+    borderRadius: 8,
+    paddingHorizontal: 15,
+  },
   container: {
     flex: 1,
     padding: 20,
