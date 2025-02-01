@@ -6,6 +6,7 @@ using CollectifyAPI.Models;
 using Newtonsoft.Json;
 using Xunit;
 
+[Collection("SequentialTests")]
 public class NoteControllerIntegrationTests : IClassFixture<IntegrationTestFactory>
 {
     private readonly HttpClient _client;
