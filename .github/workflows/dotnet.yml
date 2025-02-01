@@ -1,6 +1,4 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
+# This workflow will build and test a .NET project
 name: .NET
 
 on:
@@ -27,12 +25,30 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Restore dependencies
+    - name: Restore Backend Dependencies
       run: dotnet restore CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj
 
-    - name: Build
+    - name: Build Backend
       run: dotnet build CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj --no-restore
 
-    - name: Test
+    - name: Run Backend Tests
       run: dotnet test CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj --no-build --verbosity normal
 
+    - name: Clean Test Project
+      run: dotnet clean CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj
+
+    - name: Restore Test Dependencies
+      run: dotnet restore CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj
+
+    - name: Build Test Project
+      run: dotnet build CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-restore
+
+    - name: Run Unit and Integration Tests
+      run: dotnet test CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-build --verbosity detailed --logger "trx;LogFileName=TestResults.trx"
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: TestResults.trx
