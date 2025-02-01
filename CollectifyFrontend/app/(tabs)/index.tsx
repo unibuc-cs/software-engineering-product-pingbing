@@ -142,7 +142,13 @@ export default function NotesScreen() {
         style={styles.backgroundImage}
       >
         <Layout style={styles.container}>
-          <List data={notes} renderItem={renderNote} style={styles.list} />
+          {notes.length > 0 ? (
+            <List data={notes} renderItem={renderNote} style={styles.list} />
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={styles.noNotesText}>No notes available. Create one!</Text>
+            </View>
+          )}
           <Button
             status="warning"
             onPress={handleAddNote}
@@ -200,5 +206,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
+  },
+  noNotesText: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginVertical: 20
   },
 });
