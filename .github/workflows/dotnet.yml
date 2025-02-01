@@ -37,7 +37,7 @@ jobs:
       run: dotnet test CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj --no-build --verbosity normal
 
     - name: Restore Test Dependencies
-      run: dotnet restore CollectifyAPI.Tests/CollectifyAPI.Tests.csproj
+      run: dotnet restore CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj
 
     - name: Run Unit and Integration Tests
-      run: dotnet test CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-build --verbosity normal
+      run: dotnet test CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-build --verbosity normal
