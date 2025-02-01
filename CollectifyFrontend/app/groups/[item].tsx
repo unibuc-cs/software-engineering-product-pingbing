@@ -138,7 +138,10 @@ export default function GroupNotesScreen() {
             {/* QR Code Button */}
             <Button
               status="info"
-              onPress={() => router.push('/qrCode')} 
+              onPress={() => router.push({
+                pathname: '../qrCode',
+                params: { item:groupId } // Pass the groupId as a parameter
+              })}
               style={styles.qrButton}
             >
               Show QR Code
