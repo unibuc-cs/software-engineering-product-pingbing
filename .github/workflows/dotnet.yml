@@ -1,3 +1,6 @@
+# This workflow will build and test a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
 name: .NET
 
 on:
@@ -9,7 +12,7 @@ on:
 
 jobs:
   backend-build-and-test:
-    name: Build and Unit Test Backend
+    name: Build and Test Backend
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -30,35 +33,8 @@ jobs:
     - name: Build
       run: dotnet build CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj --no-restore
 
-    - name: Run Unit Tests
-      run: dotnet test CollectifyAPI.Tests/ControllersTests --no-build --verbosity normal
+    - name: Test Backend Project
+      run: dotnet test CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj --no-build --verbosity normal
 
-  integration-tests:
-    name: Run Integration Tests
-    runs-on: ubuntu-latest
-    needs: backend-build-and-test
-
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    - name: Restore dependencies
-      run: dotnet restore CollectifyAPI.Tests/IntegrationTests/IntegrationTests.csproj
-
-    - name: Build
-      run: dotnet build CollectifyAPI.Tests/IntegrationTests/IntegrationTests.csproj --no-restore
-
-    - name: Run Integration Tests
-      run: dotnet test CollectifyAPI.Tests/IntegrationTests --no-build --verbosity normal --logger trx
-
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: TestResults/
+    - name: Test Unit and Integration Tests
+      run: dotnet test CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-build --verbosity normal
