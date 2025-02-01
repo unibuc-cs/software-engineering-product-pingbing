@@ -29,6 +29,13 @@ export default function RootLayout() {
       />
 
       <Stack.Screen
+        name="signup"
+        options={{
+          title: ""
+        }}
+      />
+
+      <Stack.Screen
         name="groups/[item]"
         options={{
           title: "Spaces"

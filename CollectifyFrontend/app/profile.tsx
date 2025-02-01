@@ -20,7 +20,7 @@ export default function ProfileScreen() {
         const avatarPath = await SecureStore.getItemAsync('avatarPath');
         console.log("avatar path",avatarPath)
         if (avatarPath) {
-          const avatarUrl = `http://10.0.2.2:5251${avatarPath}`; 
+          const avatarUrl = `http://10.0.2.2:5251${avatarPath}`; //`http://10.0.2.2:5251${avatarPath}`; //`https://red-panda.go.ro/collectify${avatarPath}`;
           setAvatarUri(avatarUrl);
           await SecureStore.setItemAsync('avatarUri', avatarUrl);
         } //else {
