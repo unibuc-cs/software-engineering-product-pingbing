@@ -44,4 +44,11 @@ jobs:
       run: dotnet build CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-restore
 
     - name: Run Unit and Integration Tests
-      run: dotnet test CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-build --verbosity detailed 
+      run: dotnet test CollectifyAPI/CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-build --verbosity detailed --logger "trx;LogFileName=TestResults.trx"
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: TestResults.trx
