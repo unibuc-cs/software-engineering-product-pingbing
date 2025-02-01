@@ -87,7 +87,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="scan"
         options={{
-          title: "Scan",
+          title: "Scan QR",
           headerRight: () => (
             <HeaderProfileButton refreshLoginStatus={checkLoginStatus} />
           ),

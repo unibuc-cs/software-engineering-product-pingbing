@@ -8,7 +8,6 @@ import { getNotesByGroupId, addNote, deleteNote } from '../../services/noteServi
 import { getGroup, updateGroup } from '../../services/groupService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
-
 type Note = {
   id: string;
   title: string;
@@ -121,7 +120,6 @@ export default function GroupNotesScreen() {
       >
         <Layout style={styles.container}>
           {/* Group Name Section */}
-        
           <Input
             style={styles.nameInput}
             textStyle={{ fontSize: 24, fontWeight: 'bold' }}
@@ -132,19 +130,28 @@ export default function GroupNotesScreen() {
             }}
             placeholder="Group Name"
           />
-          {/* QR Code Button */}
-          <View style={styles.qrButtonContainer}>
-              <Button
-                  status="info"
-                  onPress={() => router.push('/qrCode')} 
-                  style={styles.qrButton}
-              >
-                  Show QR Code
-              </Button>
+          
+          {/* Button Group */}
+          <View style={styles.buttonGroup}>
+            {/* QR Code Button */}
+            <Button
+              status="info"
+              onPress={() => router.push('/qrCode')} 
+              style={styles.qrButton}
+            >
+              Show QR Code
+            </Button>
+
+            {/* Members Button */}
+            <Button
+              status="primary"
+              onPress={() => router.push('/groups/groupmembers')}
+              style={styles.membersButton}
+            >
+              See Members
+            </Button>
           </View>
-              
-      
-         
+
           {/* Notes List */}
           <List
             data={notes}
@@ -166,13 +173,37 @@ export default function GroupNotesScreen() {
 }
 
 const styles = StyleSheet.create({
-  qrButtonContainer: {
-    marginVertical: 10,
-    alignItems: 'center',
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
   qrButton: {
     borderRadius: 8,
-    paddingHorizontal: 15,
+    paddingVertical: 8,   // Slightly smaller vertical padding
+    paddingHorizontal: 12, // Slightly smaller horizontal padding
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light transparent background
+    borderColor: '#ccc',  // Light border
+    borderWidth: 1,       // Border width
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3.84,
+    flex: 1,
+    marginRight: 10,
+  },
+  membersButton: {
+    borderRadius: 8,
+    paddingVertical: 8,   // Slightly smaller vertical padding
+    paddingHorizontal: 12, // Slightly smaller horizontal padding
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light transparent background
+    borderColor: '#ccc',  // Light border
+    borderWidth: 1,       // Border width
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3.84,
+    flex: 1,
   },
   container: {
     flex: 1,

@@ -49,7 +49,7 @@ export default function RootLayout() {
          <Stack.Screen
          name = "(tabs)/scan"
          options={{
-          title: "Scan"
+          title: "Scan QR"
         }}
         />
 
