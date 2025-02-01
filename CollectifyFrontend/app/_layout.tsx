@@ -46,12 +46,6 @@ export default function RootLayout() {
         }}
       />
 
-      <Stack.Screen
-         name = "(tabs)/qrCode"
-         options={{
-          title: "QRCode"
-        }}
-        />
          <Stack.Screen
          name = "(tabs)/scan"
          options={{

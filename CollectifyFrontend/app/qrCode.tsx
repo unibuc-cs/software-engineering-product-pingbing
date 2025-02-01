@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import QRCode from 'react-native-qrcode-svg';
-import { IQRCodePayload } from '../../src/library/IQRCodePayload';
+import { IQRCodePayload } from '../src/library/IQRCodePayload';
 
 const QRCodeScreen = () => {
     const router = useRouter();
@@ -11,9 +11,9 @@ const QRCodeScreen = () => {
     return (
         <View style={styles.container}>
             <QRCode value={JSON.stringify(payload)} />
-            <View style={styles.button}>
+            {/* <View style={styles.button}>
                 <Button title="Go to Scanner" onPress={() => router.push('/scan')} />
-            </View>
+            </View> */}
         </View>
     );
 };
@@ -30,4 +30,4 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 10
     }
-});
+}); 
