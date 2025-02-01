@@ -16,7 +16,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 type UserProfile = {
   id: string;
-  nickname: string;
+  nickname: string | null;
   avatarPath: string | null;
 };
 
@@ -94,7 +94,9 @@ export default function GroupMembersScreen() {
             renderItem={({ item }) => (
               <ListItem
                 title={() => (
-                  <Text style={styles.memberText}>{item.nickname}</Text>
+                  <Text style={styles.memberText}>
+                    {item.nickname ? item.nickname : 'Anonymous'} {/* Fallback to "Anonymous" if no nickname */}
+                  </Text>
                 )}
                 accessoryLeft={() => (
                   <Avatar source={{ uri: item.avatarPath ?? '' }} size="medium" />
