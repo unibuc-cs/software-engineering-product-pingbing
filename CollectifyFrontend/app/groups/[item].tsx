@@ -17,6 +17,8 @@ type Note = {
 export default function GroupNotesScreen() {
   const router = useRouter();
   const { item: groupId } = useLocalSearchParams<{ item: string }>();
+  //console.log("THIS IS THE GROUP ID from Ioana:", groupId); // Log to verify if groupId is valid
+
   const [groupName, setGroupName] = useState<string>(''); // State for group name
   const [notes, setNotes] = useState<Note[]>([]); // State for notes
   const [error, setError] = useState<string | null>(null); // State for errors
@@ -145,7 +147,10 @@ export default function GroupNotesScreen() {
             {/* Members Button */}
             <Button
               status="primary"
-              onPress={() => router.push('/groups/groupmembers')}
+              onPress={() => router.push({
+                pathname: './groupmembers',
+                params: { item:groupId } // Pass the groupId as a parameter
+              })}
               style={styles.membersButton}
             >
               See Members

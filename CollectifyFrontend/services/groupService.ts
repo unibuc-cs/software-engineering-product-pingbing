@@ -151,4 +151,29 @@ export const deleteGroup = async (id: string) => {
     }
     throw error;
   }
+
+};
+
+export const getGroupMembers = async (groupId: string) => {
+  try {
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+    if (!accessToken) {
+      throw new Error('Access token is missing. Please log in.');
+    }
+    
+    //console.log("Sending request with groupId:", groupId);  // Log the groupId being sent
+
+    const response = await api.get('/api/groups/get_group_members', {
+      params: { groupId },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    console.log("Response data:", response.data);  // Log the response
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the group members:', error);
+    throw error;
+  }
 };
