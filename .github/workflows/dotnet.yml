@@ -27,14 +27,17 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Restore dependencies
+    - name: Restore Backend Dependencies
       run: dotnet restore CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj
 
-    - name: Build
+    - name: Build Backend
       run: dotnet build CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj --no-restore
 
-    - name: Test Backend Project
+    - name: Run Backend Tests
       run: dotnet test CollectifyAPI/CollectifyAPI/CollectifyAPI.csproj --no-build --verbosity normal
 
-    - name: Test Unit and Integration Tests
+    - name: Restore Test Dependencies
+      run: dotnet restore CollectifyAPI.Tests/CollectifyAPI.Tests.csproj
+
+    - name: Run Unit and Integration Tests
       run: dotnet test CollectifyAPI.Tests/CollectifyAPI.Tests.csproj --no-build --verbosity normal
