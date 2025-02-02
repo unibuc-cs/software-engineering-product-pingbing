@@ -7,12 +7,14 @@ import {
   ApplicationProvider,
   Avatar,
   Spinner,
+  Button,
 } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native';
 import * as eva from '@eva-design/eva';
 import { getGroupMembers } from '../../services/groupService';
 import { getProfile } from '../../services/authService';
 import { useLocalSearchParams } from 'expo-router';
+import { deleteMemberFromGroup } from '../../services/groupService'; // Import the delete function
 
 type UserProfile = {
   id: string;
@@ -64,6 +66,18 @@ export default function GroupMembersScreen() {
     fetchMembers();
   }, [groupId, currentUserId]);
 
+  // Handle member deletion
+  const handleDeleteMember = async (memberId: string) => {
+    try {
+      await deleteMemberFromGroup(groupId as string, memberId);
+      // Update the UI after successful deletion
+      setGroupMembers((prevMembers) => prevMembers.filter((member) => member.id !== memberId));
+      alert('Member removed successfully.');
+    } catch (error) {
+      alert('Failed to remove member.');
+    }
+  };
+
   if (error) {
     return (
       <ApplicationProvider {...eva} theme={eva.light}>
@@ -100,6 +114,15 @@ export default function GroupMembersScreen() {
                 )}
                 accessoryLeft={() => (
                   <Avatar source={{ uri: item.avatarPath ?? '' }} size="medium" />
+                )}
+                accessoryRight={() => (
+                  <Button
+                    status="danger"
+                    size="small"
+                    onPress={() => handleDeleteMember(item.id)} // Call delete when pressed
+                  >
+                    Delete
+                  </Button>
                 )}
                 style={styles.listItem}
               />
