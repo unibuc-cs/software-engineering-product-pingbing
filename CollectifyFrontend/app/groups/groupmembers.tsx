@@ -9,7 +9,7 @@ import {
   Spinner,
   Button,
 } from '@ui-kitten/components';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ImageBackground } from 'react-native';
 import * as eva from '@eva-design/eva';
 import { getGroupMembers } from '../../services/groupService';
 import { getProfile } from '../../services/authService';
@@ -52,9 +52,7 @@ export default function GroupMembersScreen() {
         // The backend wraps the members inside $values.
         const members: UserProfile[] = response?.$values ?? [];
         // Exclude the current user from the group members.
-        const filteredMembers = currentUserId
-          ? members.filter((member: UserProfile) => member.id !== currentUserId)
-          : members;
+        const filteredMembers = members;
         setGroupMembers(filteredMembers);
       } catch {
         setError('Failed to load group members. Please try again.');
@@ -101,10 +99,15 @@ export default function GroupMembersScreen() {
 
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
+      <ImageBackground
+          source={require('../../assets/images/background.jpeg')}
+          style={styles.backgroundImage}
+      >
       <Layout style={styles.container}>
         {groupMembers.length > 0 ? (
           <List
             data={groupMembers}
+            style={styles.list}
             renderItem={({ item }) => (
               <ListItem
                 title={() => (
@@ -133,6 +136,7 @@ export default function GroupMembersScreen() {
           <Text style={styles.noGroupsText}>No members. Add someone!</Text>
         )}
       </Layout>
+      </ImageBackground>
     </ApplicationProvider>
   );
 }
@@ -160,6 +164,10 @@ const styles = StyleSheet.create({
     color: '#888',
     marginVertical: 20,
   },
+  list: {
+    marginHorizontal: 10,
+    backgroundColor: 'transparent',
+  },
   listItem: {
     marginVertical: 4,
     height: 70,
@@ -171,5 +179,9 @@ const styles = StyleSheet.create({
   memberText: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
   },
 });
