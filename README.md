@@ -62,11 +62,10 @@ Our product delivers a personalized, shareable organization experience, making i
 ### User story: As a user, I want to add a profile picture and nickname to my account.
 #### Requirements:
 - Implement frontend UI to upload profile pictures;
-- Create an nput field for users to enter their nickname;
-- Create an API endpoint to store and retrieve profile images;
-- Store images securely.
+- Create an input field for users to enter their nickname;
+- Create an API endpoint to store and retrieve profile images.
 
-### User story: As a user, I want to be able to create notes and groups/spaces that only I can have access to them.
+### User story: As a user, I want to be able to create notes and groups/spaces that only I can access.
 #### Requirements:
 - Implement frontend UI for creating and managing personal notes and groups/spaces;
 - Ensure secure access control.
@@ -74,7 +73,7 @@ Our product delivers a personalized, shareable organization experience, making i
 ### User story: As a user, I want to create groups/spaces with notes that can be shared with other users of the application.
 #### Requirements:
 - Implement a frontend UI for group/space creation and management;
-- Allow users to invite others via QR code.
+- Allow users to invite others to groups/spaces via QR code.
 
 ### User story: As a user, I want to be able to change the name of my notes.
 #### Requirements:
@@ -110,6 +109,7 @@ Our product delivers a personalized, shareable organization experience, making i
 ### User story: As a user, I want to be able to see a list with all the members of a group/space so that I know who has access to it.
 #### Requirements:
 - Implement a page to display group members;
+- Create backend API for fetching members of a group.
 
 ### User story: As a user, I want to be able to remove a member from a group/space.
 #### Requirements:
@@ -376,7 +376,7 @@ We implemented a .NET GitHub Actions workflow (dotnet.yml) to automate the testi
 We use feature branches to develop specific features independently before merging into main.
 
 Workflow:
-- Developers create a new feature branch (feature/user-authentication);
+- Developers create a new feature branch;
 - Code is reviewed through pull requests (PRs) before merging;
 - The CI/CD pipeline automatically tests the changes;
 - Once approved, the branch is merged into main.
