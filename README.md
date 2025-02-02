@@ -26,6 +26,10 @@ Our product delivers a personalized, shareable organization experience, making i
 
 ## 📲 Demo
 
+https://github.com/user-attachments/assets/e0bde9f6-ca12-4dba-959c-32b0ad626866
+
+https://github.com/user-attachments/assets/45cd9f37-f997-4f7e-ae23-5b4d5d260135
+
 ## 🕹️ How to use QR Scanner
 1) Go to the group you want to add the new person and press the 'Show QR Code' button
 - screenshot the Qr Code using the camera icon from the right side of the emulator( it should save on your desktop)
