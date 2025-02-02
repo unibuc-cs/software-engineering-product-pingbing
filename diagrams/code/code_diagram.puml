@@ -1,0 +1,57 @@
+@startuml diagrame
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+' Styles
+skinparam rectangle {
+    BorderColor Black
+    BorderStyle Dotted
+    Padding 35
+}
+
+' Content
+rectangle "API Application" as boundary {
+    ' Controllers
+    Component(accountController, "User Controller","C#", "Handles user authentication requests and manages user sessions.") #89CFF0
+    Component(noteController, "Note Controller","C#", "Manages requests related to notes, including creation, retrieval, and deletion.") #89CFF0
+    Component(groupController, "Group Controller","C#", "Manages requests related to groups, including creation, members management, and deletion.") #89CFF0
+    ' Services
+    Component(accountService, "Account Service", "C#", "Processes business logic related to user accounts and authentication.") #89CFF0
+    Component(noteService, "Note Service", "C#", "Handles business logic for notes management and interacts with the repository layer.") #89CFF0
+    Component(groupService, "Group Service", "C#", "Handles business logic for groups management and interacts with the repository layer.") #89CFF0
+    Component(tokenService, "Token Service", "C#", "Handles business logic for tokens management and interacts with the repository layer.") #89CFF0
+    ' Repositories
+    Component(noteRepository, "Note Repository", "C#", "Interacts with the database for CRUD operations on notes.") #89CFF0
+    Component(accountRepository, "Account Repository", "C#", "Manages data persistence and retrieval for user accounts.") #89CFF0
+    Component(groupRepository, "Group Repository", "C#", "Interacts with the database for CRUD operations on groups.") #89CFF0
+    Component(tokenRepository, "Token Repository", "C#", "Interacts with the database for CRUD operations on tokens.") #89CFF0
+    ' Helpers
+    Component(encrypter, "Encrypter", "C#", "Encrypts and decrypts given input.") #89CFF0
+    Component(exception, "ActionResponseExceptions", "C#", "Creates exceptions associated with a status code.") #89CFF0
+}
+
+ContainerDb(dataBase, "App Database", "Microsoft SQL Server", "Stores user details, notes, and specific tables to facilitate collections of notes.") #23282a
+
+Rel(noteController, noteService, " Uses")
+Rel(groupController, groupService, " Uses")
+Rel(accountController, accountService, " Uses")
+
+Rel(noteService, exception, "Throws")
+Rel(accountService, exception, "Throws")
+Rel(groupService, exception, "Throws")
+Rel(tokenService, exception, "Throws")
+
+Rel(noteService, encrypter, "Encrypts/decrypts notes using")
+Rel(encrypter, noteRepository, "Requests database action to")
+Rel(accountService, accountRepository, "Requests database action to")
+Rel(groupService, groupRepository, "Requests database action to")
+Rel(accountService, tokenService, " Uses")
+Rel(tokenService, tokenRepository, "Requests database action to")
+
+Rel(accountRepository, dataBase, " Reads from and writes to")
+Rel(noteRepository, dataBase, " Reads from and writes to")
+Rel(groupRepository, dataBase, " Reads from and writes to")
+Rel(tokenRepository, dataBase, " Reads from and writes to")
+
+@enduml

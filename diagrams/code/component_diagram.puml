@@ -15,30 +15,24 @@ Container(mobileApp, "Mobile App", "React Native", "Provides notes manipulation 
 
 rectangle "API Application" as boundary {
     ' Controllers
-    Component(accountController, "Account Controller","C#", "Handles user authentication requests and manages user sessions.") #89CFF0
+    Component(accountController, "User Controller","C#", "Handles user authentication requests and manages user sessions.") #89CFF0
     Component(notesController, "Notes Controller","C#", "Manages requests related to notes, including creation, retrieval, and deletion.") #89CFF0
+    Component(groupsController, "Groups Controller","C#", "Manages requests related to groups, including creation, members management, and deletion.") #89CFF0
+
     ' Services
-    Component(accountService, "Account Service", "C#", "Processes business logic related to user accounts and authentication.") #89CFF0
-    Component(notesService, "Notes Service", "C#", "Handles business logic for notes management and interacts with the repository layer.") #89CFF0
-    Component(notificationService, "Notification Service", "C#", "Takes care of sending notifications when certain events occur within the application.") #89CFF0
-    ' Repositories
-    Component(notesRepository, "Notes Repository", "C#", "Interacts with the database for CRUD operations on notes.") #89CFF0
-    Component(accountRepository, "Account Repository", "C#", "Manages data persistence and retrieval for user accounts.") #89CFF0
+    Component(services, "API Services", "C#", "Contains business logic for the actions requiered by controllers.") #89CFF0
 }
 
 ContainerDb(dataBase, "App Database", "Microsoft SQL Server", "Stores user details, notes, and specific tables to facilitate collections of notes.") #23282a
 
 ' Relationships
-Rel(mobileApp, accountController, " Makes API calls to")
-Rel(mobileApp, notesController, " Makes API calls to")
+Rel(mobileApp, accountController, "Makes API calls to")
+Rel(mobileApp, notesController, "Makes API calls to")
+Rel(mobileApp, groupsController, "Makes API calls to")
 
-Rel(notesController, notesService, " Uses")
-Rel(notesController, notificationService, " Uses")
-Rel(accountController, accountService, " Uses")
+Rel(accountController, services, "Solves requests using")
+Rel(notesController, services, "Solves requests using")
+Rel(groupsController, services, "Solves requests using")
 
-Rel(notesService, notesRepository, "Requests database action to")
-Rel(accountService, accountRepository, "Requests database action to")
-
-Rel(accountRepository, dataBase, " Reads from and writes to")
-Rel(notesRepository, dataBase, " Reads from and writes to")
+Rel(services, dataBase, "Gets data from and stores to")
 @enduml

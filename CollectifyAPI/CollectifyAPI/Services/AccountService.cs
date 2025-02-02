@@ -18,7 +18,7 @@ namespace CollectifyAPI.Services
             _mapper = mapper;
         }
 
-        public async Task RegisterAsync(UserCreditentials userCreditentials, UserManager<AppUser> userManager)
+        public virtual async Task RegisterAsync(UserCreditentials userCreditentials, UserManager<AppUser> userManager)
         {
             if (userCreditentials.Email == null)
             {
@@ -53,7 +53,7 @@ namespace CollectifyAPI.Services
             }
         }
 
-        public async Task<LoginTokens> LoginAsync(UserCreditentials userCreditentials, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public virtual async Task<LoginTokens> LoginAsync(UserCreditentials userCreditentials, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             if (userCreditentials.Email == null)
             {
@@ -85,7 +85,7 @@ namespace CollectifyAPI.Services
             return new LoginTokens(accessToken, refreshToken);
         }
 
-        public async Task<LoginTokens> RefreshAsync(LoginTokens tokens, UserManager<AppUser> userManager, TokenService tokenService)
+        public virtual async Task<LoginTokens> RefreshAsync(LoginTokens tokens, UserManager<AppUser> userManager, TokenService tokenService)
         {
             if (tokens.AccessToken == null || tokens.RefreshToken == null)
             {
@@ -116,7 +116,7 @@ namespace CollectifyAPI.Services
             return new LoginTokens(newAccessToken, newRefreshToken);
         }
 
-        public async Task<UserProfile> GetUserProfileAsync(UserManager<AppUser> userManager, string userId)
+        public virtual async Task<UserProfile> GetUserProfileAsync(UserManager<AppUser> userManager, string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
 
@@ -128,7 +128,7 @@ namespace CollectifyAPI.Services
             return _mapper.Map<UserProfile>(user);
         }
 
-        public async Task<UserProfile> EditUserProfileAsync(UserManager<AppUser> userManager, string userId, UserProfile userProfile, IFormFile? avatar)
+        public virtual async Task<UserProfile> EditUserProfileAsync(UserManager<AppUser> userManager, string userId, UserProfile userProfile, IFormFile? avatar)
         {
             var user = await userManager.FindByIdAsync(userId);
 

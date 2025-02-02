@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { ApplicationProvider, Layout, Text, Input, Button, Icon } from '@ui-kitten/components';
+import { ApplicationProvider, Layout, Text, Input, Button } from '@ui-kitten/components';
 import { useRouter } from 'expo-router';
 import * as eva from '@eva-design/eva';
 import { loginUser } from '../services/authService'; 

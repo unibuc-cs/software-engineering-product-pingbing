@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://10.0.2.2:5251', 
-  // baseURL: '192.168.100.20',
+  baseURL: 'http://10.0.2.2:5251', //'http://10.0.2.2:5251', //'https://red-panda.go.ro/collectify', // sau ip telefon
   timeout: 10000,
   httpsAgent: {
     rejectUnauthorized: false, 

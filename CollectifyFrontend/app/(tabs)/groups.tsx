@@ -99,7 +99,9 @@ export default function GroupsScreen() {
           {groups.length > 0 ? (
             <List data={groups} renderItem={renderGroup} style={styles.list} />
           ) : (
-            <Text style={styles.noGroupsText}>No groups available. Add a new group!</Text>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={styles.noGroupsText}>No spaces available. Create one!</Text>
+            </View>
           )}
           <Button
             status="warning"
@@ -153,8 +155,7 @@ const styles = StyleSheet.create({
   },
   noGroupsText: {
     textAlign: 'center',
-    fontSize: 16,
-    color: '#888',
-    marginVertical: 20,
+    fontSize: 20,
+    marginVertical: 20
   },
 });
