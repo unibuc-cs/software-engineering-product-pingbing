@@ -4,21 +4,21 @@ import * as SecureStore from 'expo-secure-store';
 
 export const getOwnedNotes = async () => {
   try {
-    // Retrieve the access token from secure storage
+   
     const accessToken = await SecureStore.getItemAsync('accessToken');
 
     if (!accessToken) {
       throw new Error('Access token is missing. Please log in.');
     }
 
-    // Add the Authorization header
+    
     const response = await api.get('/api/notes/owned_notes', {
       headers: {
-        Authorization: `Bearer ${accessToken}`, // Pass the token here
+        Authorization: `Bearer ${accessToken}`, 
       },
     });
 
-    return response.data; // Assuming the response contains the notes
+    return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching owned notes', error.response?.data || error.message);
@@ -31,24 +31,24 @@ export const getOwnedNotes = async () => {
 
 export const getNote = async (id: string) => {
   try {
-    // Retrieve the access token from secure storage
+  
     const accessToken = await SecureStore.getItemAsync('accessToken');
 
     if (!accessToken) {
       throw new Error('Access token is missing. Please log in.');
     }
 
-    // Send a GET request to the get_note endpoint
+   
     const response = await api.get(`/api/notes/get_note`, {
       params: {
-        noteId: id, // Pass noteId as a query parameter
+        noteId: id, 
       },
       headers: {
-        Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+        Authorization: `Bearer ${accessToken}`, 
       },
     });
 
-    return response.data; // Assuming the response contains the note details
+    return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error fetching the note', error.response?.data || error.message);
@@ -89,29 +89,29 @@ export const getNotesByGroupId = async (groupId: string) => {
 
 export const addNote = async (title: string, content: string, groupId: string | null = null) => {
   try {
-    // Retrieve the access token from secure storage
+   
     const accessToken = await SecureStore.getItemAsync('accessToken');
 
     if (!accessToken) {
       throw new Error('Access token is missing. Please log in.');
     }
 
-    // Send a POST request to the add_note endpoint
+   
     const response = await api.post(
       '/api/notes/add_note',
       {
-        title,   // Title of the note
-        content, // Content of the note
-        groupId, // Group ID to associate the note with
+        title,  
+        content, 
+        groupId, 
       },
       {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+          Authorization: `Bearer ${accessToken}`, 
         },
       }
     );
 
-    return response.data; // Assuming the response contains the created note details
+    return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error adding a new note', error.response?.data || error.message);
@@ -124,29 +124,29 @@ export const addNote = async (title: string, content: string, groupId: string | 
 
 export const updateNote = async (id: string, title: string, content: string) => {
   try {
-    // Retrieve the access token from secure storage
+  
     const accessToken = await SecureStore.getItemAsync('accessToken');
 
     if (!accessToken) {
       throw new Error('Access token is missing. Please log in.');
     }
 
-    // Send a PUT request to the update_note endpoint
+   
     const response = await api.put(
       '/api/notes/update_note',
       {
-        id,  // ID of the note to update
-        title,       // Updated title
-        content,     // Updated content
+        id, 
+        title,       
+        content,    
       },
       {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+          Authorization: `Bearer ${accessToken}`, 
         },
       }
     );
 
-    return response.data; // Assuming the response contains the updated note details
+    return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error updating the note', error.response?.data || error.message);
@@ -159,24 +159,24 @@ export const updateNote = async (id: string, title: string, content: string) => 
 
 export const deleteNote = async (id: string) => {
   try {
-    // Retrieve the access token from secure storage
+   
     const accessToken = await SecureStore.getItemAsync('accessToken');
 
     if (!accessToken) {
       throw new Error('Access token is missing. Please log in.');
     }
 
-    // Send a DELETE request to the delete_note endpoint
+   
     const response = await api.delete('/api/notes/delete_note', {
       params: {
-        noteId: id, // Pass noteId as a query parameter
+        noteId: id, 
       },
       headers: {
-        Authorization: `Bearer ${accessToken}`, // Pass the token in the Authorization header
+        Authorization: `Bearer ${accessToken}`, 
       },
     });
 
-    return response.data; // Assuming the response confirms the deletion
+    return response.data; 
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error deleting the note', error.response?.data || error.message);

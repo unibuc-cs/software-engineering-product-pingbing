@@ -14,7 +14,8 @@ import * as eva from '@eva-design/eva';
 import { getGroupMembers } from '../../services/groupService';
 import { getProfile } from '../../services/authService';
 import { useLocalSearchParams } from 'expo-router';
-import { deleteMemberFromGroup } from '../../services/groupService'; // Import the delete function
+import { deleteMemberFromGroup } from '../../services/groupService'; 
+
 
 type UserProfile = {
   id: string;
@@ -30,12 +31,12 @@ export default function GroupMembersScreen() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch the current user's profile once when the component mounts.
+  
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const profile = await getProfile();
-        setCurrentUserId(profile.id); // Assuming the profile includes "id"
+        setCurrentUserId(profile.id); 
       } catch {
         setError('Failed to fetch user profile.');
       }
@@ -43,15 +44,15 @@ export default function GroupMembersScreen() {
     fetchUserProfile();
   }, []);
 
-  // Fetch group members whenever groupId or currentUserId changes.
+  
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         if (!groupId) return;
         const response = await getGroupMembers(groupId as string);
-        // The backend wraps the members inside $values.
+        
         const members: UserProfile[] = response?.$values ?? [];
-        // Exclude the current user from the group members.
+        
         const filteredMembers = members;
         setGroupMembers(filteredMembers);
       } catch {
@@ -64,11 +65,11 @@ export default function GroupMembersScreen() {
     fetchMembers();
   }, [groupId, currentUserId]);
 
-  // Handle member deletion
+  
   const handleDeleteMember = async (memberId: string) => {
     try {
       await deleteMemberFromGroup(groupId as string, memberId);
-      // Update the UI after successful deletion
+      
       setGroupMembers((prevMembers) => prevMembers.filter((member) => member.id !== memberId));
       alert('Member removed successfully.');
     } catch (error) {
@@ -112,7 +113,7 @@ export default function GroupMembersScreen() {
               <ListItem
                 title={() => (
                   <Text style={styles.memberText}>
-                    {item.nickname ? item.nickname : 'Anonymous'} {/* Fallback to "Anonymous" if no nickname */}
+                    {item.nickname ? item.nickname : 'Anonymous'} 
                   </Text>
                 )}
                 accessoryLeft={() => (
@@ -122,7 +123,7 @@ export default function GroupMembersScreen() {
                   <Button
                     status="danger"
                     size="small"
-                    onPress={() => handleDeleteMember(item.id)} // Call delete when pressed
+                    onPress={() => handleDeleteMember(item.id)} 
                   >
                     Delete
                   </Button>

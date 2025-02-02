@@ -10,15 +10,15 @@ import * as SecureStore from 'expo-secure-store';
 
 
 export default function TabLayout() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // `null` indicates loading state
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); 
 
-  // Check login status
+  
   const checkLoginStatus = async () => {
     const accessToken = await SecureStore.getItemAsync('accessToken');
     if (accessToken) {
-      setIsLoggedIn(true); // User is logged in
+      setIsLoggedIn(true); 
     } else {
-      setIsLoggedIn(false); // User is not logged in
+      setIsLoggedIn(false); 
     }
   };
 
@@ -27,12 +27,12 @@ export default function TabLayout() {
   }, []);
 
   if (isLoggedIn === null) {
-    // Render a loading state while login status is being determined
+    
     return <View />;
   }
 
   if (!isLoggedIn) {
-    // Render only the Stack layout for logged-out users
+    
     return (
       <Stack>
         <Stack.Screen
@@ -45,17 +45,17 @@ export default function TabLayout() {
     );
   }
 
-  // Render Tabs for logged-in users
+  
   return (
     <Tabs
       initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: '#ffc94d',
         tabBarStyle: {
-          height: 60, // Increase the height of the footer
+          height: 60, 
         },
         tabBarLabelStyle: {
-          fontSize: 16, // Increase the font size for the tab labels
+          fontSize: 16, 
         },
       }}
     >
@@ -112,8 +112,8 @@ function HeaderProfileButton({ refreshLoginStatus }: { refreshLoginStatus: () =>
       await SecureStore.deleteItemAsync(key);
     }
 
-    refreshLoginStatus(); // Notify the parent to refresh the login state
-    router.push('../login'); // Redirect to the login page
+    refreshLoginStatus(); 
+    router.push('../login'); 
   };
 
   return (

@@ -21,10 +21,10 @@ interface Note {
 
 export default function NotesScreen() {
   const router = useRouter();
-  const [notes, setNotes] = useState<Note[]>([]); // State for notes
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [notes, setNotes] = useState<Note[]>([]); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
-  // Fetch notes
+  
   const fetchNotes = async () => {
     try {
       const fetchedNotes = await getOwnedNotes();
@@ -39,7 +39,7 @@ export default function NotesScreen() {
     }
   };
 
-  // Check login status and fetch notes when the screen is focused
+ 
   useFocusEffect(
     React.useCallback(() => {
       const checkLoginStatus = async () => {
@@ -50,16 +50,16 @@ export default function NotesScreen() {
             try {
               await refreshAccessToken();
               setIsLoggedIn(true);
-              fetchNotes(); // Fetch notes if logged in
+              fetchNotes(); 
             } catch (error) {
               setIsLoggedIn(false);
             }
           } else {
             setIsLoggedIn(true);
-            fetchNotes(); // Fetch notes if logged in
+            fetchNotes(); 
           }
         } else {
-          setIsLoggedIn(false); // User is not logged in
+          setIsLoggedIn(false); 
         }
       };
 
@@ -79,16 +79,16 @@ export default function NotesScreen() {
   };
 
   const handleAddNote = async () => {
-    await addNote('New Note', '', null); // Create a new note
-    fetchNotes(); // Fetch the updated notes
+    await addNote('New Note', '', null); 
+    fetchNotes(); 
   };
 
   const handleDeleteNote = async (noteId: string) => {
-    await deleteNote(noteId); // Delete a note
-    fetchNotes(); // Fetch the updated notes
+    await deleteNote(noteId); 
+    fetchNotes(); 
   };
 
-  // Render note items
+  
   const renderNote: ListRenderItem<Note> = ({ item }) => (
     <ListItem
       title={() => (

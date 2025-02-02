@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Layout, Text, List, ListItem, Button, ApplicationProvider } from '@ui-kitten/components';
 import { StyleSheet, ListRenderItem, View, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
+import { useFocusEffect } from '@react-navigation/native'; 
 import * as eva from '@eva-design/eva';
 import { GetGroupsByMemberId, addGroup, deleteGroup } from '../../services/groupService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -39,28 +39,28 @@ export default function GroupsScreen() {
     }
   };
 
-  // Call fetchGroups whenever the screen is focused
+  
   useFocusEffect(
     React.useCallback(() => {
       fetchGroups();
     }, [])
   );
 
-  // Handle adding a new group
+  
   const handleAddGroup = async () => {
     try {
       await addGroup('New Space');
-      fetchGroups(); // Refresh groups list
+      fetchGroups(); 
     } catch (error) {
       console.error('Error adding a group:', error);
     }
   };
 
-  // Handle deleting a group
+  
   const handleDeleteGroup = async (groupId: string) => {
     try {
       await deleteGroup(groupId);
-      fetchGroups(); // Refresh groups list
+      fetchGroups(); 
     } catch (error) {
       console.error('Error deleting a group:', error);
     }

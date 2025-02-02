@@ -8,6 +8,7 @@ import { getNotesByGroupId, addNote, deleteNote } from '../../services/noteServi
 import { getGroup, updateGroup } from '../../services/groupService';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
+
 type Note = {
   id: string;
   title: string;
@@ -17,22 +18,22 @@ type Note = {
 export default function GroupNotesScreen() {
   const router = useRouter();
   const { item: groupId } = useLocalSearchParams<{ item: string }>();
-  //console.log("THIS IS THE GROUP ID from Ioana:", groupId); // Log to verify if groupId is valid
+  
 
-  const [groupName, setGroupName] = useState<string>(''); // State for group name
-  const [notes, setNotes] = useState<Note[]>([]); // State for notes
-  const [error, setError] = useState<string | null>(null); // State for errors
+  const [groupName, setGroupName] = useState<string>(''); 
+  const [notes, setNotes] = useState<Note[]>([]); 
+  const [error, setError] = useState<string | null>(null); 
   
   let debounceTimeout: NodeJS.Timeout;
 
   const fetchGroupAndNotes = async () => {
     try {
       if (groupId) {
-        // Fetch group details
+       
         const group = await getGroup(groupId as string);
         setGroupName(group.name);
 
-        // Fetch notes
+       
         const fetchedData = await getNotesByGroupId(groupId as string);
         const fetchedNotes = fetchedData.$values ? fetchedData.$values : [];
         setNotes(fetchedNotes);
@@ -45,45 +46,45 @@ export default function GroupNotesScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchGroupAndNotes(); // Fetch data every time the screen regains focus
+      fetchGroupAndNotes(); 
     }, [groupId])
   );
 
   const debouncedSaveGroupName = (name: string) => {
-    clearTimeout(debounceTimeout); // Clear previous timeout
+    clearTimeout(debounceTimeout); 
     debounceTimeout = setTimeout(async () => {
       try {
         if (groupId) {
-          await updateGroup(groupId as string, name); // Update the group name
+          await updateGroup(groupId as string, name); 
           console.log('Group name updated successfully!');
         }
       } catch (error) {
         console.error('Error updating the group name:', error);
       }
-    }, 1000); // Adjust debounce delay as needed
+    }, 1000); 
   };
 
-  // Handle adding a new note
+  
   const handleAddNote = async () => {
     try {
-      await addNote('New Note', '', groupId as string); // Create a new note
-      fetchGroupAndNotes(); // Refresh group and notes
+      await addNote('New Note', '', groupId as string); 
+      fetchGroupAndNotes(); 
     } catch (error) {
       console.error('Error adding a new note:', error);
     }
   };
 
-  // Handle deleting a note
+  
   const handleDeleteNote = async (noteId: string) => {
     try {
-      await deleteNote(noteId); // Delete the note by ID
-      fetchGroupAndNotes(); // Refresh group and notes
+      await deleteNote(noteId); 
+      fetchGroupAndNotes(); 
     } catch (error) {
       console.error('Error deleting the note:', error);
     }
   };
 
-  // Render note items
+  
   const renderNote = ({ item }: { item: Note }) => (
     <ListItem
       title={() => (
@@ -117,42 +118,42 @@ export default function GroupNotesScreen() {
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <ImageBackground
-        source={require('../../assets/images/background.jpeg')} // Add your image path here
+        source={require('../../assets/images/background.jpeg')} 
         style={styles.backgroundImage}
       >
         <Layout style={styles.container}>
-          {/* Group Name Section */}
+          
           <Input
             style={styles.nameInput}
             textStyle={{ fontSize: 24, fontWeight: 'bold' }}
             value={groupName}
             onChangeText={(text) => {
-              setGroupName(text); // Update local state
-              debouncedSaveGroupName(text); // Call debounced save
+              setGroupName(text); 
+              debouncedSaveGroupName(text);
             }}
             placeholder="Group Name"
           />
           
-          {/* Button Group */}
+         
           <View style={styles.buttonGroup}>
-            {/* QR Code Button */}
+           
             <Button
               status="info"
               onPress={() => router.push({
                 pathname: '../qrCode',
-                params: { item:groupId } // Pass the groupId as a parameter
+                params: { item:groupId } 
               })}
               style={styles.qrButton}
             >
               Show QR Code
             </Button>
 
-            {/* Members Button */}
+            
             <Button
               status="primary"
               onPress={() => router.push({
                 pathname: './groupmembers',
-                params: { item:groupId } // Pass the groupId as a parameter
+                params: { item:groupId } 
               })}
               style={styles.membersButton}
             >
@@ -160,11 +161,11 @@ export default function GroupNotesScreen() {
             </Button>
           </View>
 
-          {/* Notes List */}
+         
           <List
             data={notes}
             renderItem={renderNote}
-            keyExtractor={(note) => note.id.toString()} // Ensure note.id is a string
+            keyExtractor={(note) => note.id.toString()} 
             style={styles.list}
           /> 
           <Button
@@ -188,11 +189,11 @@ const styles = StyleSheet.create({
   },
   qrButton: {
     borderRadius: 8,
-    paddingVertical: 8,   // Slightly smaller vertical padding
-    paddingHorizontal: 12, // Slightly smaller horizontal padding
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light transparent background
-    borderColor: '#ccc',  // Light border
-    borderWidth: 1,       // Border width
+    paddingVertical: 8,   
+    paddingHorizontal: 12, 
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+    borderColor: '#ccc',  
+    borderWidth: 1,       
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -202,11 +203,11 @@ const styles = StyleSheet.create({
   },
   membersButton: {
     borderRadius: 8,
-    paddingVertical: 8,   // Slightly smaller vertical padding
-    paddingHorizontal: 12, // Slightly smaller horizontal padding
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light transparent background
-    borderColor: '#ccc',  // Light border
-    borderWidth: 1,       // Border width
+    paddingVertical: 8,   
+    paddingHorizontal: 12, 
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+    borderColor: '#ccc',  
+    borderWidth: 1,       
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
   },
   list: {
     marginHorizontal: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', // White
+    backgroundColor: 'rgba(255, 255, 255, 0.3)', 
     borderRadius: 15,
   },
   listItem: {

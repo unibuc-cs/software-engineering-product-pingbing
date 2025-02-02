@@ -3,11 +3,12 @@ import { Text, View, StyleSheet, ImageBackground } from 'react-native';
 import { ApplicationProvider, Spinner } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 
+
 export default function Index() {
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
       <ImageBackground
-        source={require('../assets/images/loading_background.jpeg')} // Path to your image
+        source={require('../assets/images/loading_background.jpeg')} 
         style={styles.background}
       >
         <View style={styles.container}>
@@ -21,9 +22,9 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1, // Ensures the image covers the whole screen
-    justifyContent: 'center', // Centers the content vertically
-    alignItems: 'center', // Centers the content horizontally
+    flex: 1,
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   container: {
     flex: 1,
@@ -33,8 +34,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'black', // Color for the title
-    marginBottom: 20, // Space between text and spinner
+    color: 'black', 
+    marginBottom: 20, 
   },
 });
 

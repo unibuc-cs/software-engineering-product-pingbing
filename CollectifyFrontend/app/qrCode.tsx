@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text } from '@ui-kitten/components'; // UI Kitten Text component
-
+import { Text } from '@ui-kitten/components'; 
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import QRCode from 'react-native-qrcode-svg';
 
@@ -20,8 +19,7 @@ const QRCodeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Add text above the QR Code */}
-      {/* <Text category='h5' style={styles.qrText}>Screenshot and send this QR code to your friend!</Text> */}
+      
       <QRCode value={groupId} />
     </View>
   );
@@ -37,7 +35,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   qrText: {
-    marginBottom: 20, // Add space between the text and the QR code
+    marginBottom: 20, 
     textAlign: 'center',
   },
   button: {

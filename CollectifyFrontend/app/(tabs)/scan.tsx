@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, Button as RNButton } from 'react-native';
 import { Camera, CameraView } from 'expo-camera';
 import { useRouter } from 'expo-router';
-import api from '../../services/axiosInstance'; // Ensure this points to your API setup
+import api from '../../services/axiosInstance'; 
 import { getProfile } from '../../services/authService'; 
 import { getGroupMembers } from '../../services/groupService';
 
@@ -10,7 +10,7 @@ const ScanScreen = () => {
   const router = useRouter();
   const [groupId, setGroupId] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
+  const [loading, setLoading] = useState<boolean>(false); 
 
   useEffect(() => {
     (async () => {
@@ -19,27 +19,27 @@ const ScanScreen = () => {
     })();
   }, []);
 
-  // Reset groupId and loading when navigating back to allow a new scan.
+  
   useEffect(() => {
     setGroupId(null);
     setLoading(false);
   }, [router]);
 
   const handleBarcodeScanned = async ({ data }: { data: string }) => {
-    setGroupId(data); // QR Code contains groupId
-    setLoading(true); // Set loading to true while processing
+    setGroupId(data); 
+    setLoading(true); 
 
     try {
-      const user = await getProfile(); // Get current user ID
+      const user = await getProfile(); 
       if (!user || !user.id) {
         Alert.alert("Error", "User not authenticated.");
         setLoading(false);
         return;
       }
 
-      // Check if the user is already in the group using the scanned groupId directly
+      
       const response = await getGroupMembers(data);
-      // Extract members from the response (wrapped in $values)
+      
       const members: Array<{ id: string }> = response?.$values ?? [];
       const isUserInGroup = members.some(member => member.id === user.id);
 
@@ -50,7 +50,7 @@ const ScanScreen = () => {
         return;
       }
 
-      // If not, proceed to add the user
+      
       const addResponse = await api.post('/api/groups/add_member', {
         groupId: data,
         memberId: user.id,
@@ -90,7 +90,7 @@ const ScanScreen = () => {
           <Text style={styles.messageText}>
             {loading ? "Joining group..." : "Successfully added to group!"}
           </Text>
-          {/* Add a button to reset state and allow re-scanning */}
+          
           <RNButton title="Scan Again" onPress={() => {
             setGroupId(null);
             setLoading(false);
