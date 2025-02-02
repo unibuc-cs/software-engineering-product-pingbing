@@ -273,7 +273,7 @@ The performance tests evaluate the app’s behavior under high traffic and load 
 
 #### 🔨 Tools Used: k6
 
-https://github.com/user-attachments/assets/1304a2e0-053f-46b8-802d-c0406923ff8e
+Uploading Screen Recording 2025-02-02 133754.mp4…
 
 ### 4. Manual Tests
 
