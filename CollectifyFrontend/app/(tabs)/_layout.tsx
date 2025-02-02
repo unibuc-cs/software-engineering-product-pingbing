@@ -83,6 +83,19 @@ export default function TabLayout() {
           ),
         }}
       />
+      
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: "Scan QR",
+          headerRight: () => (
+            <HeaderProfileButton refreshLoginStatus={checkLoginStatus} />
+          ),
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome name={focused ? 'file' : 'file-o'} color={color} size={27} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

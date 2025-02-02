@@ -17,6 +17,8 @@ type Note = {
 export default function GroupNotesScreen() {
   const router = useRouter();
   const { item: groupId } = useLocalSearchParams<{ item: string }>();
+  //console.log("THIS IS THE GROUP ID from Ioana:", groupId); // Log to verify if groupId is valid
+
   const [groupName, setGroupName] = useState<string>(''); // State for group name
   const [notes, setNotes] = useState<Note[]>([]); // State for notes
   const [error, setError] = useState<string | null>(null); // State for errors
@@ -130,6 +132,33 @@ export default function GroupNotesScreen() {
             }}
             placeholder="Group Name"
           />
+          
+          {/* Button Group */}
+          <View style={styles.buttonGroup}>
+            {/* QR Code Button */}
+            <Button
+              status="info"
+              onPress={() => router.push({
+                pathname: '../qrCode',
+                params: { item:groupId } // Pass the groupId as a parameter
+              })}
+              style={styles.qrButton}
+            >
+              Show QR Code
+            </Button>
+
+            {/* Members Button */}
+            <Button
+              status="primary"
+              onPress={() => router.push({
+                pathname: './groupmembers',
+                params: { item:groupId } // Pass the groupId as a parameter
+              })}
+              style={styles.membersButton}
+            >
+              See Members
+            </Button>
+          </View>
 
           {/* Notes List */}
           <List
@@ -137,7 +166,7 @@ export default function GroupNotesScreen() {
             renderItem={renderNote}
             keyExtractor={(note) => note.id.toString()} // Ensure note.id is a string
             style={styles.list}
-          />
+          /> 
           <Button
             status="warning"
             onPress={handleAddNote}
@@ -152,6 +181,38 @@ export default function GroupNotesScreen() {
 }
 
 const styles = StyleSheet.create({
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  qrButton: {
+    borderRadius: 8,
+    paddingVertical: 8,   // Slightly smaller vertical padding
+    paddingHorizontal: 12, // Slightly smaller horizontal padding
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light transparent background
+    borderColor: '#ccc',  // Light border
+    borderWidth: 1,       // Border width
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3.84,
+    flex: 1,
+    marginRight: 10,
+  },
+  membersButton: {
+    borderRadius: 8,
+    paddingVertical: 8,   // Slightly smaller vertical padding
+    paddingHorizontal: 12, // Slightly smaller horizontal padding
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Light transparent background
+    borderColor: '#ccc',  // Light border
+    borderWidth: 1,       // Border width
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3.84,
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
